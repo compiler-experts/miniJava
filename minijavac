@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+for FILE1 in "$@"
+do
+    ./Main.byte $FILE1
+done 

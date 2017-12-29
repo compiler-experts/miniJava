@@ -14,7 +14,13 @@ then input your Username and Password in the command prompt
 
 ## How to build the compiler
 
-Using `ocamlbuild` to build the compiler
+Using the shell script `build`
+
+```sh
+./build
+```
+
+or using `ocamlbuild` to build the compiler
 
 ```sh
 ocamlbuild Main.byte
@@ -26,7 +32,14 @@ ocamlbuild Main.byte
 
 ## How to execute the compiler
 
-Using the following command to build and then execute the compiler on the given file named `<filename>`
+
+Using the shell script `minijavac`
+
+```sh
+./minijavac <filename>
+```
+
+or using the following command to build and then execute the compiler on the given file named `<filename>`
 
 ```sh
 ocamlbuild Main.byte -- <filename>
