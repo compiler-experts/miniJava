@@ -47,3 +47,17 @@ ocamlbuild Main.byte -- <filename>
 
 > By default, the program searches for file with the extension `.java` and append it to the given filename if
 it does not end with it.
+
+## How to test the Compiler
+
+Using the shell script `test`
+
+```sh
+./test
+```
+
+it will execute `Main.byte` on all files in the directory `Evaluator`
+
+## How to contribute the Project
+
+If you are a team member of the project, please follow the [Working Standard](./WorkingStandard.md) to make appropriate contributions
