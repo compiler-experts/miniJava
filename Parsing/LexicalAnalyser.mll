@@ -10,7 +10,8 @@
     | TIMES   -> print_string "TIMES"
     | INT i   -> print_string "INT("; print_int i; print_string ")"
     | IDENT s -> print_string "IDENT("; print_string s; print_string ")"
-  
+    | ENDOFLINECOMMENT  ic -> print_string "ENDOFLINECOMMENT("; print_string ic; print_string ")"
+    | TRADITIONALCOMMENT mc -> print_string "TRADITIONALCOMMENT("; print_string mc; print_string ")"
 
   open Lexing
   exception Eof
@@ -41,10 +42,17 @@ let integer = digit+
 let ident = letter (letter | digit | '_')*
 let space = [' ' '\009' '\012']
 let newline = ('\010' | '\013' | "\013\010")
+let not_newline = [^ '\n' '\r']
+let endofline_comment =  "//" not_newline*
+let not_star = [^ '*']
+let not_star_not_slash = [^ '*' '/']
+let traditional_comment =  "/*" not_star* "*"+ (not_star_not_slash not_star* "*"+)* "/"
 
 rule nexttoken = parse
   | newline       { Location.incr_line lexbuf; nexttoken lexbuf }
   | space+        { nexttoken lexbuf }
+  | endofline_comment as c   { ENDOFLINECOMMENT c}
+  | traditional_comment as c { TRADITIONALCOMMENT c}
   | eof           { EOF }
   | "+"           { PLUS } 
   | "-"           { MINUS } 

@@ -6,8 +6,12 @@
 %token <int> INT
 %token <string> IDENT
 
+/* Comments */
+%token <string> ENDOFLINECOMMENT
+%token <string> TRADITIONALCOMMENT
+
 %start expression
-%type < Expression.expression > expression
+%type < Expression.expression list> expression
 
 
 %left PLUS MINUS
@@ -17,7 +21,16 @@
 %%
 
 expression:
- | e=expr EOF            { e }
+  | comment* EOF {[]}
+  | e=comment_or_expression r=expression EOF
+     { e::r }
+
+comment:
+  | ENDOFLINECOMMENT {}
+  | TRADITIONALCOMMENT {}
+
+comment_or_expression:
+  | comment* e=expr { e }
 
 expr:
   | LPAR e=expr RPAR
