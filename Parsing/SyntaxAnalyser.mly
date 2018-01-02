@@ -2,7 +2,7 @@
   open Expression
 %}
 /* Seperators */
-%token EOF EOL LPAR RPAR
+%token EOF EOL LPAR RPAR SEMICOLON
 
 /* Operators*/
 %token EQUAL
@@ -21,6 +21,7 @@
 %start expression
 %type < Expression.expression list> expression
 
+%right SEMICOLON
 %right EQUAL
 %left PLUS MINUS
 %left TIMES DIV MOD
@@ -43,6 +44,8 @@ comment_or_expression:
 
 
 expr:
+  | e1=expr SEMICOLON 
+      { Semi(e1)}
   | LPAR e=expr RPAR
       { e }
   | MINUS e=expr %prec UMINUS

@@ -14,6 +14,9 @@
     | TRADITIONALCOMMENT mc -> print_string "TRADITIONALCOMMENT("; print_string mc; print_string ")"
     | LOWERIDENT s   -> print_string "LOWERIDENT("; print_string s; print_string ")"
     | UPPERIDENT s  -> print_string "UPPERIDENT("; print_string s; print_string ")" 
+    | LPAR    -> print_string "LPAR"
+    | RPAR    -> print_string "RPAR"
+    | SEMICOLON   -> print_string "SEMICOLON"
 
   open Lexing
   exception Eof
@@ -64,6 +67,7 @@ rule nexttoken = parse
   | "*"           { TIMES } 
   | "%"           { MOD }
   | "="           { EQUAL}
+  | ";"           { SEMICOLON }
   | integer as nb    { try INT (int_of_string nb) with Failure "int_of_string" -> raise_error (Illegal_int(nb)) lexbuf }
   | lower_id as str  { LOWERIDENT str }
   | upper_id as str  { UPPERIDENT str }

@@ -11,3 +11,7 @@
 // Identifiers
 a
 a = 5
+
+// Separators
+1 + 5;
+n + m;
