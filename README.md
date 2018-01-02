@@ -2,6 +2,8 @@
 
 A compilation project for Thrid year students of IMT Atlantique (the former Telecom Bretagne)
 
+The specification of the project can be found [here](https://svn.telecom-bretagne.eu/repository/ens-eleves/3a/f2b/304/minijava.pdf) (Authorization Required)
+
 ## How to clone the project
 
 Using `git clone`
@@ -58,6 +60,37 @@ Using the shell script `test`
 
 it will execute `Main.byte` on all files in the directory `Evaluator`
 
-## How to contribute the Project
+## How to contribute to the Project
 
 If you are a team member of the project, please follow the [Working Standard](./WorkingStandard.md) to make appropriate contributions
+
+## To do list
+
+### First part: Lexical and syntactic analyzers
+
+*Deadline 15/01/2018*
+
+#### Expression
+
+- [x] Line Terminators
+- [ ] Input Elements and Tokens
+- [x] White Space
+- [x] Comments
+- [ ] Identifiers
+- [ ] Keywords
+- [ ] Literals
+- [ ] Separators
+- [ ] Operators
+
+
+#### Classes
+
+---
+
+### Second part: The typer and the execution support
+
+*Deadline 25/02/2018*
+
+#### Type
+
+### Execution

@@ -1,9 +1,8 @@
 # The Working Standard for the minijava Project
 
+## How to collaborate
 
-## How to work together
-
-We use continous integration as collaboration mode, the reason is explained [here](continuous-integration-vs-working-seprately-for-weeks-and-then-making-a-huge-merge)
+We use continous integration as collaboration mode, the reason is explained [here](#continuous-integration-vs-working-seprately-for-weeks-and-then-making-a-huge-merge)
 
 **Plese follow the following steps when adding new features**
 
@@ -63,3 +62,13 @@ We have two collaboration mode, namely:
 It becomes obvious that the second collaboration mode has several disadvantages:
 - working separately means you knows a little about what others are working on. It can be dangrous when we come to the merging step.
 - making a huge merging is difficult and time-consuming compared continous integration. For example, we may have declared same varibles, then we need to rename them one by one in the merging step, or, we may have written reusable block of code, then we have to eliminate the duplication in the merging step.
+
+## Useful resources
+
+1. [Ocaml Tutorials](https://ocaml.org/learn/tutorials/)
+2. [Lexer and parser generators (ocamllex, ocamlyacc)](https://caml.inria.fr/pub/docs/manual-ocaml/lexyacc.html)
+3. [Menhir Reference Manual](http://gallium.inria.fr/~fpottier/menhir/manual.pdf)
+4. The Java Language Specification, Second Edition
+    - [PDF](http://www1.cs.columbia.edu/~sedwards/papers/gosling2000java.pdf)
+    - [HTML](http://cs.au.dk/~mis/dOvs/javaspec/index.html)
+5. [Regular Expression 101](https://regex101.com/)
