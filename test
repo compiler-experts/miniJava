@@ -6,5 +6,5 @@ do
   echo -e "\033[31m Unit test of $f ..."
   # take action on each file. $f store current file name
   echo -e "\033[0m"
-  ./Main.byte $f
+  ./_build/Main/Main.byte $f
 done

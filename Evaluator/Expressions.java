@@ -7,3 +7,7 @@
 /* this comment 
 /* // /** ends here: 
 */
+
+// Identifiers
+a
+a = 5

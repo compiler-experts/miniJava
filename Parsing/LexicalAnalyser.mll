@@ -4,14 +4,16 @@
   let print_lexeme = function
     | EOL     -> print_string "EOL"
     | EOF     -> print_string "EOF"
+    | EQUAL   -> print_string "EQUAL"
     | PLUS    -> print_string "PLUS"
     | MINUS   -> print_string "MINUS"
     | DIV     -> print_string "DIV"
     | TIMES   -> print_string "TIMES"
     | INT i   -> print_string "INT("; print_int i; print_string ")"
-    | IDENT s -> print_string "IDENT("; print_string s; print_string ")"
     | ENDOFLINECOMMENT  ic -> print_string "ENDOFLINECOMMENT("; print_string ic; print_string ")"
     | TRADITIONALCOMMENT mc -> print_string "TRADITIONALCOMMENT("; print_string mc; print_string ")"
+    | LOWERIDENT s   -> print_string "LOWERIDENT("; print_string s; print_string ")"
+    | UPPERIDENT s  -> print_string "UPPERIDENT("; print_string s; print_string ")" 
 
   open Lexing
   exception Eof
@@ -36,10 +38,12 @@
       print_string " is illegal "
 }
 
-let letter = ['a'-'z' 'A'-'Z']
+let lower_ch = ['a'-'z']
+let upper_ch = ['A'-'Z']
 let digit = ['0'-'9']
 let integer = digit+
-let ident = letter (letter | digit | '_')*
+let lower_id = lower_ch (lower_ch | upper_ch | digit | '_')*
+let upper_id = upper_ch (lower_ch | upper_ch | digit | '_')*
 let space = [' ' '\009' '\012']
 let newline = ('\010' | '\013' | "\013\010")
 let not_newline = [^ '\n' '\r']
@@ -58,9 +62,11 @@ rule nexttoken = parse
   | "-"           { MINUS } 
   | "/"           { DIV } 
   | "*"           { TIMES } 
-  | "%"           { MOD } 
+  | "%"           { MOD }
+  | "="           { EQUAL}
   | integer as nb    { try INT (int_of_string nb) with Failure "int_of_string" -> raise_error (Illegal_int(nb)) lexbuf }
-  | ident as str  { IDENT str }
+  | lower_id as str  { LOWERIDENT str }
+  | upper_id as str  { UPPERIDENT str }
   | _ as c        { raise_error (Illegal_character(c)) lexbuf }
 
   {

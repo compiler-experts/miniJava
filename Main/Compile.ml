@@ -2,7 +2,6 @@ open LexicalAnalyser
 open SyntaxAnalyser
 open Expression
 
-
 let print_expressions_or_classes exp = 
   (* Print the AST *)
   print_string (string_of_expr exp)
