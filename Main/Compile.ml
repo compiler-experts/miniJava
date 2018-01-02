@@ -10,8 +10,8 @@ let print_expressions_or_classes exp =
 let execute lexbuf verbose = 
 	
   try 
-    (* to enable LexicalAnalyser, plase un comment this block
-    print_endline ("Doing LexicalAnalyser....");
+    (* to enable LexicalAnalyser, plase un comment this block *)
+    (* print_endline ("Doing LexicalAnalyser....");
     LexicalAnalyser.examine_all lexbuf;
     print_string "\n"; *)
     print_endline ("Doing SyntaxAnalyser....");

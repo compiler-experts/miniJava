@@ -10,7 +10,10 @@ type expression =
   | Assign of string * expression
   | Binop of binop * expression * expression
   | Unop of unop * expression
-  | Semi of expression 
+  | Semi of expression
+  | IfThen of expression * expression
+  | IfThenElse of expression * expression * expression
+  
 
 exception Unbound_variable of string
 
@@ -45,5 +48,7 @@ let rec string_of_expr exp =
   | Binop(op, e1, e2)   -> "(" ^(string_of_expr e1)^ (string_of_op_b op) ^(string_of_expr e2)^ ")"
   | Unop(op, e)         -> "(" ^ (string_of_op_u op) ^(string_of_expr e)^ ")"
   | Assign(s,e)         ->  "Assign(" ^s^ "=" ^(string_of_expr e)^ ")"
-  | Semi(e1)             ->  (string_of_expr e1)^ " ; " 
+  | Semi(e1)            ->  (string_of_expr e1)^ ";\n"
+  | IfThen(e1,e2)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" })\n"
+  | IfThenElse(e1,e2,e3)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" } Else {\n"^(string_of_expr e3)^" })\n"
   

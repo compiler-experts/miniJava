@@ -15,3 +15,17 @@ a = 5
 // Separators
 1 + 5;
 n + m;
+
+// Keywords
+// if then
+
+if (i) {
+    i = 2;
+}
+
+// if then else
+if (i) {
+    i = 2;
+} else {
+    i = 3;
+}

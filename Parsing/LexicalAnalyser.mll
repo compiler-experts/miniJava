@@ -12,11 +12,15 @@
     | INT i   -> print_string "INT("; print_int i; print_string ")"
     | ENDOFLINECOMMENT  ic -> print_string "ENDOFLINECOMMENT("; print_string ic; print_string ")"
     | TRADITIONALCOMMENT mc -> print_string "TRADITIONALCOMMENT("; print_string mc; print_string ")"
+    | IF        -> print_string "IF"
+    | ELSE      -> print_string "ELSE"
     | LOWERIDENT s   -> print_string "LOWERIDENT("; print_string s; print_string ")"
     | UPPERIDENT s  -> print_string "UPPERIDENT("; print_string s; print_string ")" 
-    | LPAR    -> print_string "LPAR"
-    | RPAR    -> print_string "RPAR"
     | SEMICOLON   -> print_string "SEMICOLON"
+    | LBRACE    -> print_string "LBRACE"
+    | RBRACE    -> print_string "RBRACE"
+    | LPAR      -> print_string "LPAR"
+    | RPAR      -> print_string "RPAR"
 
   open Lexing
   exception Eof
@@ -50,6 +54,7 @@ let upper_id = upper_ch (lower_ch | upper_ch | digit | '_')*
 let space = [' ' '\009' '\012']
 let newline = ('\010' | '\013' | "\013\010")
 let not_newline = [^ '\n' '\r']
+(* Comments *)
 let endofline_comment =  "//" not_newline*
 let not_star = [^ '*']
 let not_star_not_slash = [^ '*' '/']
@@ -60,6 +65,8 @@ rule nexttoken = parse
   | space+        { nexttoken lexbuf }
   | endofline_comment as c   { ENDOFLINECOMMENT c}
   | traditional_comment as c { TRADITIONALCOMMENT c}
+  | "if"          { IF }
+  | "else"        { ELSE }
   | eof           { EOF }
   | "+"           { PLUS } 
   | "-"           { MINUS } 
@@ -68,6 +75,10 @@ rule nexttoken = parse
   | "%"           { MOD }
   | "="           { EQUAL}
   | ";"           { SEMICOLON }
+  | "{"           { LBRACE }
+  | "}"           { RBRACE }
+  | "("           { LPAR }
+  | ")"           { RPAR }
   | integer as nb    { try INT (int_of_string nb) with Failure "int_of_string" -> raise_error (Illegal_int(nb)) lexbuf }
   | lower_id as str  { LOWERIDENT str }
   | upper_id as str  { UPPERIDENT str }

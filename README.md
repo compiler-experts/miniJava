@@ -76,8 +76,14 @@ If you are a team member of the project, please follow the [Working Standard](./
 - [ ] Input Elements and Tokens
 - [x] White Space
 - [x] Comments
-- [ ] Identifiers
+- [x] Identifiers
 - [ ] Keywords
+    - [ ] else
+    - [ ] for
+    - [ ] if
+    - [ ] int
+    - [ ] switch
+    - [ ] while
 - [ ] Literals
 - [ ] Separators
 - [ ] Operators
