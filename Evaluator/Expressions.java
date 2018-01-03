@@ -29,3 +29,21 @@ if (i) {
 } else {
     i = 3;
 }
+
+
+// operators
+
+--i;
+i--;
+
+x > y;
+x >= y;
+x != y;
+x < y;
+x <= y;
+x == y;
+x && y;
+x || y;
+
+i++;
+++i;

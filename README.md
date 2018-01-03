@@ -86,8 +86,12 @@ If you are a team member of the project, please follow the [Working Standard](./
 - [ ] Literals
     - [x] int
 - [ ] Separators
-- [ ] Operators
-
+- [x] Operators
+    - [x] `=` Simple Assignment Operator
+    - [x] `+ - * / %` Arithmetic Operators
+    - [x] `+ - ++ -- !` Unary Operators
+    - [x] `== != > < <= >=` Equality and Relational Operators
+    - [x] `&& ||` Conditional Operators
 
 #### Classes
 
