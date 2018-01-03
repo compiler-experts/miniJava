@@ -63,7 +63,7 @@ expr:
   | e1=expr o=bop e2=expr
       { Binop(o,e1,e2) }
   | i=INT
-      { Const i }
+      { Int i }
   | id=LOWERIDENT
       { Var id }
   | id=LOWERIDENT EQUAL e=expr

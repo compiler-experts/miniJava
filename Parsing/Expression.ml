@@ -5,7 +5,7 @@ type unop =
   | Uplus | Uminus
 
 type expression =
-  | Const of int
+  | Int of int
   | Var of string
   | Assign of string * expression
   | Binop of binop * expression * expression
@@ -43,7 +43,7 @@ let string_of_op_b = function
 
 let rec string_of_expr exp =
   match exp with
-  | Const c             -> string_of_int c
+  | Int c               -> "Int("^string_of_int c^")"
   | Var v               -> "Var("^v^")"
   | Binop(op, e1, e2)   -> "(" ^(string_of_expr e1)^ (string_of_op_b op) ^(string_of_expr e2)^ ")"
   | Unop(op, e)         -> "(" ^ (string_of_op_u op) ^(string_of_expr e)^ ")"

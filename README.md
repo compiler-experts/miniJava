@@ -78,19 +78,24 @@ If you are a team member of the project, please follow the [Working Standard](./
 - [x] Comments
 - [x] Identifiers
 - [ ] Keywords
-    - [ ] else
+    - [x] else
     - [ ] for
-    - [ ] if
-    - [ ] int
+    - [x] if
     - [ ] switch
     - [ ] while
 - [ ] Literals
+    - [x] int
 - [ ] Separators
 - [ ] Operators
 
 
 #### Classes
 
+- [ ] Keywords
+    - [ ] class
+    - [ ] static
+    - [ ] extends
+    - [ ] new
 ---
 
 ### Second part: The typer and the execution support
