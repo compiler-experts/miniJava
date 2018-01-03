@@ -21,6 +21,8 @@
     | RBRACE    -> print_string "RBRACE"
     | LPAR      -> print_string "LPAR"
     | RPAR      -> print_string "RPAR"
+    | BOOLEAN b   -> print_string "BOOL("; print_string(string_of_bool b); print_string ")"
+    | NULL      -> print_string "NULL"
 
   open Lexing
   exception Eof
@@ -51,6 +53,9 @@ let digit = ['0'-'9']
 let integer = digit+
 let lower_id = lower_ch (lower_ch | upper_ch | digit | '_')*
 let upper_id = upper_ch (lower_ch | upper_ch | digit | '_')*
+(* Literal *)
+let str = '"' ([^ '"'] |'\092''"')* '"'
+let boolean = "true" | "false"
 let space = [' ' '\009' '\012']
 let newline = ('\010' | '\013' | "\013\010")
 let not_newline = [^ '\n' '\r']
@@ -67,6 +72,9 @@ rule nexttoken = parse
   | traditional_comment as c { TRADITIONALCOMMENT c}
   | "if"          { IF }
   | "else"        { ELSE }
+  | boolean as bl { BOOLEAN (bool_of_string bl) }
+  | "null"        { NULL }
+  | str as st     { STRING st}
   | eof           { EOF }
   | "+"           { PLUS } 
   | "-"           { MINUS } 

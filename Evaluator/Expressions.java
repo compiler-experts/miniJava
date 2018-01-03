@@ -29,3 +29,10 @@ if (i) {
 } else {
     i = 3;
 }
+
+//Literals
+true
+false
+null
+"I am \"a String"
+""
