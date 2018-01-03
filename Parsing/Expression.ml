@@ -7,6 +7,9 @@ type unop =
 type expression =
   | Const of int
   | Var of string
+  | Bool of bool
+  | Null 
+  | String of string
   | Assign of string * expression
   | Binop of binop * expression * expression
   | Unop of unop * expression
@@ -45,6 +48,9 @@ let rec string_of_expr exp =
   match exp with
   | Const c             -> string_of_int c
   | Var v               -> "Var("^v^")"
+  | Bool b              -> string_of_bool b
+  | Null                -> "null"
+  | String s            -> "String("^s^")"
   | Binop(op, e1, e2)   -> "(" ^(string_of_expr e1)^ (string_of_op_b op) ^(string_of_expr e2)^ ")"
   | Unop(op, e)         -> "(" ^ (string_of_op_u op) ^(string_of_expr e)^ ")"
   | Assign(s,e)         ->  "Assign(" ^s^ "=" ^(string_of_expr e)^ ")"

@@ -10,7 +10,12 @@
 /* Operators*/
 %token EQUAL
 %token PLUS MINUS TIMES DIV MOD 
+
+/* Literals*/
 %token <int> INT
+%token <string> STRING
+%token <bool> BOOLEAN
+%token NULL
 
 /* Comments */
 %token <string> ENDOFLINECOMMENT
@@ -64,6 +69,12 @@ expr:
       { Binop(o,e1,e2) }
   | i=INT
       { Const i }
+  | b=BOOLEAN
+      { Bool b }
+  | n=NULL
+      { Null }
+  | s=STRING
+      { String s}
   | id=LOWERIDENT
       { Var id }
   | id=LOWERIDENT EQUAL e=expr
