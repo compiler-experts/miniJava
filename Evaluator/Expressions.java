@@ -36,3 +36,21 @@ false
 null
 "I am \"a String"
 ""
+
+// operators
+
+--i
+i--
+
+x > y
+x >= y
+x != y
+x < y
+
+x <= y
+x == y
+x && y
+x || y
+
+i++
+++i

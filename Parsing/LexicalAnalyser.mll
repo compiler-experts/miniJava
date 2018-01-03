@@ -4,11 +4,22 @@
   let print_lexeme = function
     | EOL     -> print_string "EOL"
     | EOF     -> print_string "EOF"
-    | EQUAL   -> print_string "EQUAL"
     | PLUS    -> print_string "PLUS"
     | MINUS   -> print_string "MINUS"
     | DIV     -> print_string "DIV"
     | TIMES   -> print_string "TIMES"
+    | INCRE   -> print_string "INCRE"
+    | DECRE   -> print_string "DECRE"
+    | ASSIGN  -> print_string "ASSIGN"
+    | GT      -> print_string "GT"
+    | LT      -> print_string "LT"
+    | NOT     -> print_string "NOT"
+    | EQUAL   -> print_string "EQUAL"
+    | NOTEQUAL -> print_string "NOTEQUAL"
+    | LE      -> print_string "LE"
+    | GE      -> print_string "GE"
+    | AND     -> print_string "AND"
+    | OR      -> print_string "OR"
     | INT i   -> print_string "INT("; print_int i; print_string ")"
     | ENDOFLINECOMMENT  ic -> print_string "ENDOFLINECOMMENT("; print_string ic; print_string ")"
     | TRADITIONALCOMMENT mc -> print_string "TRADITIONALCOMMENT("; print_string mc; print_string ")"
@@ -76,12 +87,23 @@ rule nexttoken = parse
   | "null"        { NULL }
   | str as st     { STRING st}
   | eof           { EOF }
+  | "++"          { INCRE }
+  | "--"          { DECRE }
   | "+"           { PLUS } 
   | "-"           { MINUS } 
   | "/"           { DIV } 
   | "*"           { TIMES } 
   | "%"           { MOD }
-  | "="           { EQUAL}
+  | "="           { ASSIGN }
+  | ">"           { GT }
+  | "<"           { LT }
+  | "!"           { NOT }
+  | "=="          { EQUAL }
+  | "!="          { NOTEQUAL }
+  | "<="          { LE }
+  | ">="          { GE }
+  | "&&"          { AND }
+  | "||"          { OR }
   | ";"           { SEMICOLON }
   | "{"           { LBRACE }
   | "}"           { RBRACE }
