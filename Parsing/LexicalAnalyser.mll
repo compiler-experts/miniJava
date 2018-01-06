@@ -1,6 +1,6 @@
 {
   open SyntaxAnalyser
-  
+
   let print_lexeme = function
     | EOL     -> print_string "EOL"
     | EOF     -> print_string "EOF"
@@ -26,7 +26,7 @@
     | IF        -> print_string "IF"
     | ELSE      -> print_string "ELSE"
     | LOWERIDENT s   -> print_string "LOWERIDENT("; print_string s; print_string ")"
-    | UPPERIDENT s  -> print_string "UPPERIDENT("; print_string s; print_string ")" 
+    | UPPERIDENT s  -> print_string "UPPERIDENT("; print_string s; print_string ")"
     | SEMICOLON   -> print_string "SEMICOLON"
     | LBRACE    -> print_string "LBRACE"
     | RBRACE    -> print_string "RBRACE"
@@ -35,17 +35,23 @@
     | BOOLEAN b   -> print_string "BOOL("; print_string(string_of_bool b); print_string ")"
     | NULL      -> print_string "NULL"
 
+    (*Class print*)
+    | CLASS     -> print_string "CLASS"
+    | NEW       -> print_string "NEW"
+    | THIS      -> print_string "THIS"
+
+
   open Lexing
   exception Eof
-  
+
   type error =
     | Illegal_character of char
     | Illegal_int of string
   exception Error of error * position * position
-  
+
   let raise_error err lexbuf =
     raise (Error(err, lexeme_start_p lexbuf, lexeme_end_p lexbuf))
-  
+
   (* Les erreurs. *)
   let report_error = function
     | Illegal_character c ->
@@ -89,10 +95,10 @@ rule nexttoken = parse
   | eof           { EOF }
   | "++"          { INCRE }
   | "--"          { DECRE }
-  | "+"           { PLUS } 
-  | "-"           { MINUS } 
-  | "/"           { DIV } 
-  | "*"           { TIMES } 
+  | "+"           { PLUS }
+  | "-"           { MINUS }
+  | "/"           { DIV }
+  | "*"           { TIMES }
   | "%"           { MOD }
   | "="           { ASSIGN }
   | ">"           { GT }
@@ -113,6 +119,11 @@ rule nexttoken = parse
   | lower_id as str  { LOWERIDENT str }
   | upper_id as str  { UPPERIDENT str }
   | _ as c        { raise_error (Illegal_character(c)) lexbuf }
+
+  (*Class*)
+  | "class"               { CLASS }
+  | "new"                 { NEW }
+  | "this"                { THIS }
 
   {
     let rec examine_all lexbuf =
