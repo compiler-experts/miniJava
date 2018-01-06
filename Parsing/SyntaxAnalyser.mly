@@ -83,7 +83,27 @@ attribute_or_method:
   | comment* a=attribute SEMICOLON
   | comment* m=method
 
+method:
+  | STATIC t=TYPE id=VAR LPAR p=params RPAR LBRACE e=expr RBRACE
+      { Method(true, t, id, p, e) }
+  | STATIC t=TYPE id=VAR LPAR RPAR LBRACE e=expr RBRACE
+      { Method(true, t, id, [], e) }
+  | t=TYPE id=VAR LPAR p=params RPAR LBRACE e=expr RBRACE
+      { Method(false, t, id, p, e) }
+  | t=TYPE id=VAR LPAR RPAR LBRACE e=expr RBRACE
+      { Method(false, t, id, [], e) }
 
+param:
+  | t=TYPE id=VAR
+      { Param(t,id) }
+      
+params:
+  | { [] }
+  | t=TYPE id=VAR
+      { [Param(t,id)] }	
+  | t=TYPE id=VAR COMMA r=param+
+      { Param(t,id) :: r}
+      
 expr:
   | e1=expr SEMICOLON
       { Semi(e1)}
