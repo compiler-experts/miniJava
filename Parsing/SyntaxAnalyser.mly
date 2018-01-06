@@ -3,6 +3,9 @@
   open Expression
 %}
 
+/* Class Keywords */
+%token CLASS NEW THIS
+
 /* Tokens */
 /* Seperators */
 %token EOF EOL LPAR RPAR SEMICOLON LBRACE RBRACE
@@ -55,6 +58,8 @@ expression:
   | comment* EOF {[]}
   | e=comment_or_expression r=expression EOF
      { e::r }
+  | c=comment_or_class r=expression EOF
+     { c::r }
 
 comment:
   | ENDOFLINECOMMENT {}
@@ -63,9 +68,44 @@ comment:
 comment_or_expression:
   | comment* e=expr { e }
 
+comment_or_class:
+  | comment* c=class { c }
 
+class:
+  | CLASS LBRACE a=attributes_or_methods RBRACE
+
+attributes_or_methods:
+  | comment* EOF {[]}
+  | a=attribute_or_method  r=attributes_or_methods
+     {a::r}
+
+attribute_or_method:
+  | comment* a=attribute SEMICOLON
+  | comment* m=method
+
+method:
+  | STATIC t=TYPE id=VAR LPAR p=params RPAR LBRACE e=expr RBRACE
+      { Method(true, t, id, p, e) }
+  | STATIC t=TYPE id=VAR LPAR RPAR LBRACE e=expr RBRACE
+      { Method(true, t, id, [], e) }
+  | t=TYPE id=VAR LPAR p=params RPAR LBRACE e=expr RBRACE
+      { Method(false, t, id, p, e) }
+  | t=TYPE id=VAR LPAR RPAR LBRACE e=expr RBRACE
+      { Method(false, t, id, [], e) }
+
+param:
+  | t=TYPE id=VAR
+      { Param(t,id) }
+      
+params:
+  | { [] }
+  | t=TYPE id=VAR
+      { [Param(t,id)] }	
+  | t=TYPE id=VAR COMMA r=param+
+      { Param(t,id) :: r}
+      
 expr:
-  | e1=expr SEMICOLON 
+  | e1=expr SEMICOLON
       { Semi(e1)}
   | LPAR e=expr RPAR
       { e }
@@ -117,5 +157,5 @@ expr:
   | NOTEQUAL  { Bnotequal }
   | OR        { Bor }
   | AND       { Band }
-  
+
 %%
