@@ -33,6 +33,9 @@
 /* Keywords */
 %token IF ELSE
 
+/* Declarations of variables */
+%token <string> TYPE
+
 /* Start symbols and types */
 %start expression
 %type < Expression.expression list> expression
@@ -84,24 +87,24 @@ attribute_or_method:
   | comment* m=method
 
 method:
-  | STATIC t=TYPE id=VAR LPAR p=params RPAR LBRACE e=expr RBRACE
+  | STATIC t=TYPE id=LOWERIDENT LPAR p=params RPAR LBRACE e=expr RBRACE
       { Method(true, t, id, p, e) }
-  | STATIC t=TYPE id=VAR LPAR RPAR LBRACE e=expr RBRACE
+  | STATIC t=TYPE id=LOWERIDENT LPAR RPAR LBRACE e=expr RBRACE
       { Method(true, t, id, [], e) }
-  | t=TYPE id=VAR LPAR p=params RPAR LBRACE e=expr RBRACE
+  | t=TYPE id=LOWERIDENT LPAR p=params RPAR LBRACE e=expr RBRACE
       { Method(false, t, id, p, e) }
-  | t=TYPE id=VAR LPAR RPAR LBRACE e=expr RBRACE
+  | t=TYPE id=LOWERIDENT LPAR RPAR LBRACE e=expr RBRACE
       { Method(false, t, id, [], e) }
 
 param:
-  | t=TYPE id=VAR
+  | t=TYPE id=LOWERIDENT
       { Param(t,id) }
       
 params:
   | { [] }
-  | t=TYPE id=VAR
+  | t=TYPE id=LOWERIDENT
       { [Param(t,id)] }	
-  | t=TYPE id=VAR COMMA r=param+
+  | t=TYPE id=LOWERIDENT COMMA r=param+
       { Param(t,id) :: r}
       
 expr:
