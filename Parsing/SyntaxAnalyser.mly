@@ -33,9 +33,15 @@
 /* Keywords */
 %token IF ELSE
 
+<<<<<<< HEAD
+/* Declarations of variables */
+%token <string> TYPE
+
 /* Start symbols and types */
 %start expression
 %type < Expression.expression list> expression
+=======
+>>>>>>> dd0dac1... solve Class compile  problem and update Compile.ml file
 
 /* Priority and associativity */
 %right SEMICOLON
@@ -50,60 +56,70 @@
 %left PINCRE PDECRE
 
 /* End of Declarations */
+
+
+/* Start symbols and types */
+%start content
+%type < Expression.class_or_expr list> content
+
 %%
 
 /* Start of Rules */
-expression:
-
+content:
   | comment* EOF {[]}
-  | e=comment_or_expression r=expression EOF
-     { e::r }
-  | c=comment_or_class r=expression EOF
+  | c=class_or_expression r=content EOF
      { c::r }
+
+class_or_expression:
+  | e=comment_or_expression {e}
+  | c=comment_or_class {c}
 
 comment:
   | ENDOFLINECOMMENT {}
   | TRADITIONALCOMMENT {}
 
 comment_or_expression:
-  | comment* e=expr { e }
+  | comment* e=expr { Expr(e) }
 
 comment_or_class:
-  | comment* c=class { c }
+  | comment* c=class_ { Class(c) }
 
-class:
-  | CLASS LBRACE a=attributes_or_methods RBRACE
+class_:
+  | CLASS id=LOWERIDENT LBRACE a=attributes_or_methods RBRACE
+    { Class_(id,a) }
 
 attributes_or_methods:
-  | comment* EOF {[]}
-  | a=attribute_or_method  r=attributes_or_methods
-     {a::r}
+  | comment*  { [] }
+  | a=attribute_or_method  r=attributes_or_methods { a::r }
 
 attribute_or_method:
-  | comment* a=attribute SEMICOLON
-  | comment* m=method
+  | comment* a=attribute SEMICOLON { Attribute(a) }
 
 method:
-  | STATIC t=TYPE id=VAR LPAR p=params RPAR LBRACE e=expr RBRACE
+  | STATIC t=TYPE id=LOWERIDENT LPAR p=params RPAR LBRACE e=expr RBRACE
       { Method(true, t, id, p, e) }
-  | STATIC t=TYPE id=VAR LPAR RPAR LBRACE e=expr RBRACE
+  | STATIC t=TYPE id=LOWERIDENT LPAR RPAR LBRACE e=expr RBRACE
       { Method(true, t, id, [], e) }
-  | t=TYPE id=VAR LPAR p=params RPAR LBRACE e=expr RBRACE
+  | t=TYPE id=LOWERIDENT LPAR p=params RPAR LBRACE e=expr RBRACE
       { Method(false, t, id, p, e) }
-  | t=TYPE id=VAR LPAR RPAR LBRACE e=expr RBRACE
+  | t=TYPE id=LOWERIDENT LPAR RPAR LBRACE e=expr RBRACE
       { Method(false, t, id, [], e) }
 
 param:
-  | t=TYPE id=VAR
+  | t=TYPE id=LOWERIDENT
       { Param(t,id) }
       
 params:
   | { [] }
-  | t=TYPE id=VAR
+  | t=TYPE id=LOWERIDENT
       { [Param(t,id)] }	
-  | t=TYPE id=VAR COMMA r=param+
+  | t=TYPE id=LOWERIDENT COMMA r=param+
       { Param(t,id) :: r}
       
+attribute:
+  | id=LOWERIDENT    {Attr(id)}
+  | id=LOWERIDENT ASSIGN expr {AttrWithAssign(id)}
+
 expr:
   | e1=expr SEMICOLON
       { Semi(e1)}
