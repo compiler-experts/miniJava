@@ -54,7 +54,6 @@
 
 /* Start of Rules */
 expression:
-
   | comment* EOF {[]}
   | e=comment_or_expression r=expression EOF
      { e::r }
@@ -69,20 +68,22 @@ comment_or_expression:
   | comment* e=expr { e }
 
 comment_or_class:
-  | comment* c=class { c }
+  | comment* c=class_ { c }
 
-class:
-  | CLASS LBRACE a=attributes_or_methods RBRACE
+class_:
+  | CLASS UPPERIDENT LBRACE a=attributes_or_methods RBRACE
+    { a }
 
 attributes_or_methods:
-  | comment* EOF {[]}
-  | a=attribute_or_method  r=attributes_or_methods
-     {a::r}
+  | comment*  { [] }
+  | a=attribute_or_method  r=attributes_or_methods { a::r }
 
 attribute_or_method:
-  | comment* a=attribute SEMICOLON
-  | comment* m=method
+  | comment* a=attribute SEMICOLON { a }
 
+attribute:
+  | id=LOWERIDENT    {t}
+  | id=LOWERIDENT ASSIGN e=expr {t}
 
 expr:
   | e1=expr SEMICOLON
