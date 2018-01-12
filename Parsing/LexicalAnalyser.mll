@@ -34,6 +34,7 @@
     | RPAR      -> print_string "RPAR"
     | BOOLEAN b   -> print_string "BOOL("; print_string(string_of_bool b); print_string ")"
     | NULL      -> print_string "NULL"
+    | COMMA     -> print_string "COMMA"
 
     (*Class print*)
     | CLASS     -> print_string "CLASS"
@@ -89,7 +90,10 @@ rule nexttoken = parse
   | "class"               { CLASS }
   | "new"                 { NEW }
   | "this"                { THIS }
-  
+  | "."                   { DOT }
+  | ","                   { COMMA}
+  | "static"              { STATIC }
+
   | newline       { Location.incr_line lexbuf; nexttoken lexbuf }
   | space+        { nexttoken lexbuf }
   | endofline_comment as c   { ENDOFLINECOMMENT c}

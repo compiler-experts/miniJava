@@ -22,6 +22,15 @@ type expression =
   | Semi of expression
   | IfThen of expression * expression
   | IfThenElse of expression * expression * expression
+  | New of string
+  | This
+  | Invoke of expression * string * expression list
+
+type param = 
+  | Param of string * string
+
+type mthd = 
+  | Method of bool * string * string * (param list) * expression
 
 type attr =
   | Attr of string
@@ -29,6 +38,7 @@ type attr =
 
 type attr_or_method =
   | Attribute of attr
+  | Method_t of mthd
 
 type class_ =
   | Class_ of string* attr_or_method list
@@ -94,8 +104,26 @@ let rec string_of_expr exp =
   | Semi(e1)            ->  (string_of_expr e1)^ ";\n"
   | IfThen(e1,e2)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" })\n"
   | IfThenElse(e1,e2,e3)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" } Else {\n"^(string_of_expr e3)^" })\n"
+  | This             -> "This(this)"
+  | Invoke(e, s, l)  -> "Invoke("^(string_of_expr e)^"."^s^"("^(string_of_exprs l)^"))"
 
+and string_of_exprs = function
+  | [] -> ""
+  | e::l -> string_of_expr e ^ string_of_exprs l
 
+let rec string_of_param p = match p with
+  | Param(t,id) -> t^" "^id
+
+let rec string_of_params params = match params with
+  | [] -> ""
+  | (p :: l) -> string_of_param(p) ^ ", " ^ string_of_params l
+
+let string_of_static_bool = function
+  | true -> "static"
+  | false -> "non-static"
+
+let string_of_method = function
+  | Method(static,s1,s2,p,e) -> "Method("^string_of_static_bool static^ " " ^s1^" "^s2^"(Params("^(string_of_params p)^")){"^(string_of_expr e)^"})"
 
 let string_of_attr = function
   | Attr a -> "Attr" ^a
@@ -103,6 +131,7 @@ let string_of_attr = function
 
 let string_of_attr_or_method = function
   | Attribute a -> string_of_attr a
+  | Method_t m -> string_of_method m
 
 let rec string_of_attrs_or_methods = function
   | [] -> ""
@@ -114,3 +143,5 @@ let string_of_class = function
 let string_of_class_or_expr = function
   | Class c -> string_of_class c
   | Expr e -> string_of_expr e
+
+  
