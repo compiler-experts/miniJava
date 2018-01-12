@@ -13,7 +13,7 @@ type expression =
   | Int of int
   | Var of string
   | Bool of bool
-  | Null 
+  | Null
   | String of string
   | Assign of string * expression
   | Binop of binop * expression * expression
@@ -22,7 +22,16 @@ type expression =
   | Semi of expression
   | IfThen of expression * expression
   | IfThenElse of expression * expression * expression
-  
+
+type attr =
+  | Attr of string
+  | AttrWithAssign of string
+
+type attr_or_method =
+  | Attribute of attr
+
+type class_ =
+  | Class_ of attr_or_method list
 
 exception Unbound_variable of string
 
@@ -48,7 +57,7 @@ let string_of_op_u = function
   | Uincre -> "++"
   | Udecre -> "--"
 
-  let string_of_op_p = function
+let string_of_op_p = function
   | Pincre -> "++"
   | Pdecre -> "--"
 
@@ -81,4 +90,19 @@ let rec string_of_expr exp =
   | Semi(e1)            ->  (string_of_expr e1)^ ";\n"
   | IfThen(e1,e2)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" })\n"
   | IfThenElse(e1,e2,e3)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" } Else {\n"^(string_of_expr e3)^" })\n"
-  
+
+
+
+let string_of_attr = function
+  | Attr a -> "Attr" ^a
+  | AttrWithAssign a -> "AttrWithAssign" ^a
+
+let string_of_attr_or_method = function
+  | Attribute a -> string_of_attr a
+
+let rec string_of_attrs_or_methods = function
+  | [] -> ""
+  | a::l -> (string_of_attr_or_method a) ^ " " ^ (string_of_attrs_or_methods l)
+
+let string_of_class = function
+  | Class_ am -> string_of_attrs_or_methods am

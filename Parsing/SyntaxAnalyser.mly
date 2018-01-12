@@ -72,8 +72,8 @@ comment_or_class:
 
 class_:
   | CLASS UPPERIDENT LBRACE a=attributes_or_methods RBRACE
-    { a }
-
+    { Class_(a) }
+  
 attributes_or_methods:
   | comment*  { [] }
   | a=attribute_or_method  r=attributes_or_methods { a::r }
