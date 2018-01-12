@@ -33,9 +33,6 @@
 /* Keywords */
 %token IF ELSE
 
-/* Start symbols and types */
-%start expression
-%type < Expression.expression list> expression
 
 /* Priority and associativity */
 %right SEMICOLON
@@ -50,40 +47,48 @@
 %left PINCRE PDECRE
 
 /* End of Declarations */
+
+
+/* Start symbols and types */
+%start content
+%type < Expression.class_or_expr list> content
+
 %%
 
 /* Start of Rules */
-expression:
+content:
   | comment* EOF {[]}
-  | e=comment_or_expression r=expression EOF
-     { e::r }
-  | c=comment_or_class r=expression EOF
+  | c=class_or_expression r=content EOF
      { c::r }
+
+class_or_expression:
+  | e=comment_or_expression {e}
+  | c=comment_or_class {c}
 
 comment:
   | ENDOFLINECOMMENT {}
   | TRADITIONALCOMMENT {}
 
 comment_or_expression:
-  | comment* e=expr { e }
+  | comment* e=expr { Expr(e) }
 
 comment_or_class:
-  | comment* c=class_ { c }
+  | comment* c=class_ { Class(c) }
 
 class_:
-  | CLASS UPPERIDENT LBRACE a=attributes_or_methods RBRACE
-    { Class_(a) }
-  
+  | CLASS id=LOWERIDENT LBRACE a=attributes_or_methods RBRACE
+    { Class_(id,a) }
+
 attributes_or_methods:
   | comment*  { [] }
   | a=attribute_or_method  r=attributes_or_methods { a::r }
 
 attribute_or_method:
-  | comment* a=attribute SEMICOLON { a }
+  | comment* a=attribute SEMICOLON { Attribute(a) }
 
 attribute:
-  | id=LOWERIDENT    {t}
-  | id=LOWERIDENT ASSIGN e=expr {t}
+  | id=LOWERIDENT    {Attr(id)}
+  | id=LOWERIDENT ASSIGN expr {AttrWithAssign(id)}
 
 expr:
   | e1=expr SEMICOLON

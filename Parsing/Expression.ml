@@ -31,7 +31,11 @@ type attr_or_method =
   | Attribute of attr
 
 type class_ =
-  | Class_ of attr_or_method list
+  | Class_ of string* attr_or_method list
+
+type class_or_expr =
+  | Class of class_
+  | Expr of expression
 
 exception Unbound_variable of string
 
@@ -105,4 +109,8 @@ let rec string_of_attrs_or_methods = function
   | a::l -> (string_of_attr_or_method a) ^ " " ^ (string_of_attrs_or_methods l)
 
 let string_of_class = function
-  | Class_ am -> string_of_attrs_or_methods am
+  | Class_(id,am) -> "Class(" ^id^ "{" ^ (string_of_attrs_or_methods am) ^ " })"
+
+let string_of_class_or_expr = function
+  | Class c -> string_of_class c
+  | Expr e -> string_of_expr e
