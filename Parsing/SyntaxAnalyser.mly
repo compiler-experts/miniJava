@@ -33,12 +33,15 @@
 /* Keywords */
 %token IF ELSE
 
+<<<<<<< HEAD
 /* Declarations of variables */
 %token <string> TYPE
 
 /* Start symbols and types */
 %start expression
 %type < Expression.expression list> expression
+=======
+>>>>>>> 5a82b8075c979133d6f3b2baf678e96925c2cdd7
 
 /* Priority and associativity */
 %right SEMICOLON
@@ -53,39 +56,46 @@
 %left PINCRE PDECRE
 
 /* End of Declarations */
+
+
+/* Start symbols and types */
+%start content
+%type < Expression.class_or_expr list> content
+
 %%
 
 /* Start of Rules */
-expression:
-
+content:
   | comment* EOF {[]}
-  | e=comment_or_expression r=expression EOF
-     { e::r }
-  | c=comment_or_class r=expression EOF
+  | c=class_or_expression r=content EOF
      { c::r }
+
+class_or_expression:
+  | e=comment_or_expression {e}
+  | c=comment_or_class {c}
 
 comment:
   | ENDOFLINECOMMENT {}
   | TRADITIONALCOMMENT {}
 
 comment_or_expression:
-  | comment* e=expr { e }
+  | comment* e=expr { Expr(e) }
 
 comment_or_class:
-  | comment* c=class { c }
+  | comment* c=class_ { Class(c) }
 
-class:
-  | CLASS LBRACE a=attributes_or_methods RBRACE
+class_:
+  | CLASS id=LOWERIDENT LBRACE a=attributes_or_methods RBRACE
+    { Class_(id,a) }
 
 attributes_or_methods:
-  | comment* EOF {[]}
-  | a=attribute_or_method  r=attributes_or_methods
-     {a::r}
+  | comment*  { [] }
+  | a=attribute_or_method  r=attributes_or_methods { a::r }
 
 attribute_or_method:
-  | comment* a=attribute SEMICOLON
-  | comment* m=method
+  | comment* a=attribute SEMICOLON { Attribute(a) }
 
+<<<<<<< HEAD
 method:
   | STATIC t=TYPE id=LOWERIDENT LPAR p=params RPAR LBRACE e=expr RBRACE
       { Method(true, t, id, p, e) }
@@ -107,6 +117,12 @@ params:
   | t=TYPE id=LOWERIDENT COMMA r=param+
       { Param(t,id) :: r}
       
+=======
+attribute:
+  | id=LOWERIDENT    {Attr(id)}
+  | id=LOWERIDENT ASSIGN expr {AttrWithAssign(id)}
+
+>>>>>>> 5a82b8075c979133d6f3b2baf678e96925c2cdd7
 expr:
   | e1=expr SEMICOLON
       { Semi(e1)}

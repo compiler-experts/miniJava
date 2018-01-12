@@ -85,6 +85,11 @@ let not_star_not_slash = [^ '*' '/']
 let traditional_comment =  "/*" not_star* "*"+ (not_star_not_slash not_star* "*"+)* "/"
 
 rule nexttoken = parse
+  (*Class*)
+  | "class"               { CLASS }
+  | "new"                 { NEW }
+  | "this"                { THIS }
+  
   | newline       { Location.incr_line lexbuf; nexttoken lexbuf }
   | space+        { nexttoken lexbuf }
   | endofline_comment as c   { ENDOFLINECOMMENT c}
@@ -122,10 +127,7 @@ rule nexttoken = parse
   | upper_id as str  { UPPERIDENT str }
   | _ as c        { raise_error (Illegal_character(c)) lexbuf }
 
-  (*Class*)
-  | "class"               { CLASS }
-  | "new"                 { NEW }
-  | "this"                { THIS }
+
 
   {
     let rec examine_all lexbuf =
