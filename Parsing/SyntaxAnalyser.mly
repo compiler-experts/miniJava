@@ -8,7 +8,7 @@
 
 /* Tokens */
 /* Seperators */
-%token EOF EOL LPAR RPAR SEMICOLON LBRACE RBRACE
+%token EOF EOL LPAR RPAR SEMICOLON LBRACE RBRACE COMMA
 
 /* Operators*/
 %token ASSIGN
@@ -16,6 +16,7 @@
 %token INCRE DECRE NOT
 %token GT LT EQUAL NOTEQUAL LE GE
 %token AND OR
+%token DOT
 
 /* Literals */
 %token <int> INT
@@ -31,17 +32,11 @@
 %token <string> LOWERIDENT UPPERIDENT
 
 /* Keywords */
-%token IF ELSE
+%token IF ELSE STATIC
 
-<<<<<<< HEAD
 /* Declarations of variables */
 %token <string> TYPE
 
-/* Start symbols and types */
-%start expression
-%type < Expression.expression list> expression
-=======
->>>>>>> 5a82b8075c979133d6f3b2baf678e96925c2cdd7
 
 /* Priority and associativity */
 %right SEMICOLON
@@ -94,9 +89,13 @@ attributes_or_methods:
 
 attribute_or_method:
   | comment* a=attribute SEMICOLON { Attribute(a) }
+  | comment* m=method1 { Method_t(m) }
 
-<<<<<<< HEAD
-method:
+attribute:
+  | id=LOWERIDENT    {Attr(id)}
+  | id=LOWERIDENT ASSIGN expr {AttrWithAssign(id)}
+
+method1:
   | STATIC t=TYPE id=LOWERIDENT LPAR p=params RPAR LBRACE e=expr RBRACE
       { Method(true, t, id, p, e) }
   | STATIC t=TYPE id=LOWERIDENT LPAR RPAR LBRACE e=expr RBRACE
@@ -117,12 +116,6 @@ params:
   | t=TYPE id=LOWERIDENT COMMA r=param+
       { Param(t,id) :: r}
       
-=======
-attribute:
-  | id=LOWERIDENT    {Attr(id)}
-  | id=LOWERIDENT ASSIGN expr {AttrWithAssign(id)}
-
->>>>>>> 5a82b8075c979133d6f3b2baf678e96925c2cdd7
 expr:
   | e1=expr SEMICOLON
       { Semi(e1)}
@@ -156,6 +149,15 @@ expr:
       { IfThen(e1, e2) }
   | IF LPAR e1=expr RPAR LBRACE e2=expr RBRACE ELSE LBRACE e3=expr RBRACE
       { IfThenElse(e1, e2, e3) }
+  | e=expr DOT mthd=LOWERIDENT LPAR args_=args RPAR
+      { Invoke(e, mthd, args_) }
+  | NEW t =TYPE
+    { New(t)}
+
+args:
+  | { [] }
+  | e=expr { [e] }
+  | e=expr COMMA res=args { e :: res}
 
 %inline uop:
   | NOT   {Unot}
@@ -176,5 +178,6 @@ expr:
   | NOTEQUAL  { Bnotequal }
   | OR        { Bor }
   | AND       { Band }
+
 
 %%
