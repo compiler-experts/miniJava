@@ -1,4 +1,3 @@
-class Point {
-	x;
-  y=1;
+class point{
+	i;
 }
