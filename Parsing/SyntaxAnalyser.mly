@@ -34,8 +34,6 @@
 /* Keywords */
 %token IF ELSE STATIC
 
-/* Declarations of variables */
-%token <string> TYPE
 
 /* Priority and associativity */
 %right SEMICOLON
@@ -79,7 +77,7 @@ comment_or_class:
   | comment* c=class_ { Class(c) }
 
 class_:
-  | CLASS id=LOWERIDENT LBRACE a=attributes_or_methods RBRACE
+  | CLASS id=UPPERIDENT LBRACE a=attributes_or_methods RBRACE
     { Class_(id,a) }
 
 attributes_or_methods:
@@ -95,27 +93,35 @@ attribute:
   | id=LOWERIDENT ASSIGN expr {AttrWithAssign(id)}
 
 method1:
-  | STATIC t=TYPE id=LOWERIDENT LPAR p=params RPAR LBRACE e=expr RBRACE
+  | STATIC t=UPPERIDENT id=LOWERIDENT LPAR p=params RPAR LBRACE e=exprs RBRACE
       { Method(true, t, id, p, e) }
-  | STATIC t=TYPE id=LOWERIDENT LPAR RPAR LBRACE e=expr RBRACE
+  | STATIC t=UPPERIDENT id=LOWERIDENT LPAR RPAR LBRACE e=exprs RBRACE
       { Method(true, t, id, [], e) }
-  | t=TYPE id=LOWERIDENT LPAR p=params RPAR LBRACE e=expr RBRACE
+  | t=UPPERIDENT id=LOWERIDENT LPAR p=params RPAR LBRACE e=exprs RBRACE
       { Method(false, t, id, p, e) }
-  | t=TYPE id=LOWERIDENT LPAR RPAR LBRACE e=expr RBRACE
+  | t=UPPERIDENT id=LOWERIDENT LPAR RPAR LBRACE e=exprs RBRACE
       { Method(false, t, id, [], e) }
 
+exprs:
+    | {[]}
+    | e = expr r=exprs {e::r}
+
 param:
-  | t=TYPE id=LOWERIDENT
+  | t=UPPERIDENT id=LOWERIDENT
       { Param(t,id) }
       
 params:
   | { [] }
-  | t=TYPE id=LOWERIDENT
+  | t=UPPERIDENT id=LOWERIDENT
       { [Param(t,id)] }	
-  | t=TYPE id=LOWERIDENT COMMA r=param+
+  | t=UPPERIDENT id=LOWERIDENT COMMA r=param+
       { Param(t,id) :: r}
       
 expr:
+  | comment+ e=expr
+      { e }
+  | e=expr comment+
+      { e }
   | e1=expr SEMICOLON
       { Semi(e1)}
   | LPAR e=expr RPAR
@@ -148,9 +154,10 @@ expr:
       { IfThen(e1, e2) }
   | IF LPAR e1=expr RPAR LBRACE e2=expr RBRACE ELSE LBRACE e3=expr RBRACE
       { IfThenElse(e1, e2, e3) }
+  | THIS { This }
   | e=expr DOT mthd=LOWERIDENT LPAR args_=args RPAR
       { Invoke(e, mthd, args_) }
-  | NEW t =TYPE
+  | NEW t =UPPERIDENT
     { New(t)}
 
 args:

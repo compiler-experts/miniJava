@@ -35,13 +35,14 @@
     | BOOLEAN b   -> print_string "BOOL("; print_string(string_of_bool b); print_string ")"
     | NULL      -> print_string "NULL"
     | COMMA     -> print_string "COMMA"
+    | STRING s-> print_string "STRING("; print_string s; print_string ")";
 
     (*Class print*)
     | CLASS     -> print_string "CLASS"
     | NEW       -> print_string "NEW"
     | THIS      -> print_string "THIS"
     | STATIC    -> print_string "STATIC"
-    | TYPE s    -> print_string "TYPE("; print_string s; print_string ")"
+    | DOT       -> print_string "."
 
 
   open Lexing
