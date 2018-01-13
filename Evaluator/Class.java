@@ -1,6 +1,6 @@
-class point{
+class Point{
 	i;
-	String t(String str){
-		"ceshi"
+	Int ceshi(){
+		5;
 	}
 }
