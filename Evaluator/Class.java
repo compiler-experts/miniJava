@@ -14,3 +14,9 @@ class Point{
 		*/
 	}
 }
+
+class Point1 extends Point
+{
+	j;
+	i=10;	
+}

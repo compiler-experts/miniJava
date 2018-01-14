@@ -43,6 +43,7 @@
     | THIS      -> print_string "THIS"
     | STATIC    -> print_string "STATIC"
     | DOT       -> print_string "."
+    | EXTENDS   -> print_string "EXTENDS"
 
 
   open Lexing
@@ -89,6 +90,7 @@ let traditional_comment =  "/*" not_star* "*"+ (not_star_not_slash not_star* "*"
 rule nexttoken = parse
   (*Class*)
   | "class"               { CLASS }
+  | "extends"             {EXTENDS}
   | "new"                 { NEW }
   | "this"                { THIS }
   | "."                   { DOT }

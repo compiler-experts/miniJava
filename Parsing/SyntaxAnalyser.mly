@@ -4,7 +4,7 @@
 %}
 
 /* Class Keywords */
-%token CLASS NEW THIS
+%token CLASS NEW THIS EXTENDS
 
 /* Tokens */
 /* Seperators */
@@ -79,6 +79,8 @@ comment_or_class:
 class_:
   | CLASS id=UPPERIDENT LBRACE a=attributes_or_methods RBRACE
     { Class_(id,a) }
+  | CLASS id1=UPPERIDENT EXTENDS id2=UPPERIDENT LBRACE a=attributes_or_methods RBRACE
+    { ClassWithExtends(id1,id2,a) }
 
 attributes_or_methods:
   | comment*  { [] }

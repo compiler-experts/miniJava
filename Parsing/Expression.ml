@@ -41,7 +41,8 @@ type attr_or_method =
   | Method_t of mthd
 
 type class_ =
-  | Class_ of string* attr_or_method list
+  | Class_ of string * attr_or_method list
+  | ClassWithExtends of string * string * attr_or_method list
 
 type class_or_expr =
   | Class of class_
@@ -139,6 +140,7 @@ let rec string_of_attrs_or_methods = function
 
 let string_of_class = function
   | Class_(id,am) -> "Class(" ^id^ "{" ^ (string_of_attrs_or_methods am) ^ " })"
+  | ClassWithExtends(id1,id2,am) -> "ClassWithExtends(" ^id1^ " extends " ^id2^ "{" ^ (string_of_attrs_or_methods am) ^ " })"
 
 let string_of_class_or_expr = function
   | Class c -> string_of_class c
