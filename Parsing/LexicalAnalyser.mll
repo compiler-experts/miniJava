@@ -33,6 +33,7 @@
     | RPAR      -> print_string "RPAR"
     | BOOLEAN b   -> print_string "BOOL("; print_string(string_of_bool b); print_string ")"
     | NULL      -> print_string "NULL"
+    | RETURN      -> print_string "RETURN"
     | COMMA     -> print_string "COMMA"
     | STRING s-> print_string "STRING("; print_string s; print_string ")";
 
@@ -104,6 +105,7 @@ rule nexttoken = parse
   | "else"        { ELSE }
   | boolean as bl { BOOLEAN (bool_of_string bl) }
   | "null"        { NULL }
+  | "return"      { RETURN }
   | str as st     { STRING st}
   | eof           { EOF }
   | "++"          { INCRE }

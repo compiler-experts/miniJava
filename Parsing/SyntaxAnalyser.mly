@@ -4,7 +4,7 @@
 %}
 
 /* Class Keywords */
-%token CLASS NEW THIS EXTENDS
+%token CLASS NEW THIS EXTENDS RETURN
 
 /* Tokens */
 /* Seperators */
@@ -151,6 +151,8 @@ expr:
       { Bool b }
   | n=NULL
       { Null }
+  | r=RETURN
+      { Return }
   | s=STRING
       { String s}
   | id=LOWERIDENT

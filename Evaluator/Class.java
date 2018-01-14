@@ -1,17 +1,20 @@
-class Point{
+class Point {
 	// Point class
-	static String j;
-	static Int i=10;
-	String s="tt";
-	Int	test(){
-		i=5;
+	static String className="Point";
+	static Int pointCount;
+	Int x;
+	Int y;
+
+	static Int getPointCount(){
+		return pointCount;
 	}
-	static String test(Int i, String s){
-		s="test";
-		// comment
-		this.test();
+	
+	String test(Int i, String s){
 		/* multi line comment
 		*/
+		this.test();
+		
+		return s;
 	}
 }
 

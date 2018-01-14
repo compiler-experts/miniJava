@@ -14,6 +14,7 @@ type expression =
   | Var of string
   | Bool of bool
   | Null
+  | Return
   | String of string
   | Assign of string * expression
   | Binop of binop * expression * expression
@@ -91,6 +92,7 @@ let rec string_of_expr exp =
   | Var v               -> "Var("^v^")"
   | Bool b              -> string_of_bool b
   | Null                -> "null"
+  | Return                -> "return"
   | String s            -> "String("^s^")"
   | Binop(op, e1, e2)   -> "(" ^(string_of_expr e1)^ (string_of_op_b op) ^(string_of_expr e2)^ ")"
   | Unop(op, e)         -> "(" ^ (string_of_op_u op) ^(string_of_expr e)^ ")"
@@ -99,7 +101,7 @@ let rec string_of_expr exp =
   | Semi(e1)            ->  (string_of_expr e1)^ ";\n"
   | IfThen(e1,e2)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" })\n"
   | IfThenElse(e1,e2,e3)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" } Else {\n"^(string_of_expr e3)^" })\n"
-  | This             -> "This(this)"
+  | This             -> "this"
   | Invoke(e, s, l)  -> "Invoke("^(string_of_expr e)^"."^s^"("^(string_of_exprs l)^"))"
 
 and string_of_exprs = function
