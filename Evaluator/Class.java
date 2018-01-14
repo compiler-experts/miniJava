@@ -1,5 +1,6 @@
 class Point{
 	// Point class
+	j;
 	i=10;
 	s="tt";
 	Int	test(){

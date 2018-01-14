@@ -90,7 +90,7 @@ attribute_or_method:
 
 attribute:
   | id=LOWERIDENT    {Attr(id)}
-  | id=LOWERIDENT ASSIGN expr {AttrWithAssign(id)}
+  | id=LOWERIDENT ASSIGN e=expr {AttrWithAssign(id,e)}
 
 method1:
   | STATIC t=UPPERIDENT id=LOWERIDENT LPAR p=params RPAR LBRACE e=exprs RBRACE
@@ -109,14 +109,14 @@ exprs:
 param:
   | t=UPPERIDENT id=LOWERIDENT
       { Param(t,id) }
-      
+
 params:
   | { [] }
   | t=UPPERIDENT id=LOWERIDENT
-      { [Param(t,id)] }	
+      { [Param(t,id)] }
   | t=UPPERIDENT id=LOWERIDENT COMMA r=param+
       { Param(t,id) :: r}
-      
+
 expr:
   | comment+ e=expr
       { e }

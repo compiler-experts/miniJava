@@ -26,15 +26,15 @@ type expression =
   | This
   | Invoke of expression * string * expression list
 
-type param = 
+type param =
   | Param of string * string
 
-type mthd = 
+type mthd =
   | Method of bool * string * string * (param list) * expression list
 
 type attr =
   | Attr of string
-  | AttrWithAssign of string
+  | AttrWithAssign of string * expression
 
 type attr_or_method =
   | Attribute of attr
@@ -126,8 +126,8 @@ let string_of_method = function
   | Method(static,s1,s2,p,e) -> "Method("^string_of_static_bool static^ " " ^s1^" "^s2^"(Params("^(string_of_params p)^")){"^(string_of_exprs e)^"})"
 
 let string_of_attr = function
-  | Attr a -> "Attr" ^a
-  | AttrWithAssign a -> "AttrWithAssign" ^a
+  | Attr a -> "Attr(" ^a^ ")"
+  | AttrWithAssign(a,e) -> "AttrWithAssign(" ^a^ "=" ^ (string_of_expr e)^ ")"
 
 let string_of_attr_or_method = function
   | Attribute a -> string_of_attr a
@@ -143,5 +143,3 @@ let string_of_class = function
 let string_of_class_or_expr = function
   | Class c -> string_of_class c
   | Expr e -> string_of_expr e
-
-  
