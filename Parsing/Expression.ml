@@ -30,7 +30,7 @@ type param =
   | Param of string * string
 
 type mthd = 
-  | Method of bool * string * string * (param list) * expression
+  | Method of bool * string * string * (param list) * expression list
 
 type attr =
   | Attr of string
@@ -123,7 +123,7 @@ let string_of_static_bool = function
   | false -> "non-static"
 
 let string_of_method = function
-  | Method(static,s1,s2,p,e) -> "Method("^string_of_static_bool static^ " " ^s1^" "^s2^"(Params("^(string_of_params p)^")){"^(string_of_expr e)^"})"
+  | Method(static,s1,s2,p,e) -> "Method("^string_of_static_bool static^ " " ^s1^" "^s2^"(Params("^(string_of_params p)^")){"^(string_of_exprs e)^"})"
 
 let string_of_attr = function
   | Attr a -> "Attr" ^a

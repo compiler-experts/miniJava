@@ -42,7 +42,7 @@
     | NEW       -> print_string "NEW"
     | THIS      -> print_string "THIS"
     | STATIC    -> print_string "STATIC"
-    | TYPE s    -> print_string "TYPE("; print_string s; print_string ")"
+    | DOT       -> print_string "."
 
 
   open Lexing
