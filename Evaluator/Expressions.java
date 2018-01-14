@@ -26,6 +26,8 @@ if (i) {
 // if then else
 if (i) {
     i = 2;
+    i = 3;
+    i = 4;
 } else {
     i = 3;
 }

@@ -14,13 +14,14 @@ type expression =
   | Var of string
   | Bool of bool
   | Null
-  | Return
+  | Return of expression
   | String of string
   | Assign of string * expression
   | Binop of binop * expression * expression
   | Unop of unop * expression
   | Postop of expression * postfix
   | Semi of expression
+  | SemiWithExpr of expression * expression
   | IfThen of expression * expression
   | IfThenElse of expression * expression * expression
   | New of string
@@ -31,7 +32,7 @@ type param =
   | Param of string * string
 
 type mthd =
-  | Method of bool * string * string * (param list) * expression list
+  | Method of bool * string * string * (param list) * expression
 
 type attr =
   | Attr of string * string
@@ -92,13 +93,14 @@ let rec string_of_expr exp =
   | Var v               -> "Var("^v^")"
   | Bool b              -> string_of_bool b
   | Null                -> "null"
-  | Return                -> "return"
+  | Return e               -> "return" ^(string_of_expr e)
   | String s            -> "String("^s^")"
   | Binop(op, e1, e2)   -> "(" ^(string_of_expr e1)^ (string_of_op_b op) ^(string_of_expr e2)^ ")"
   | Unop(op, e)         -> "(" ^ (string_of_op_u op) ^(string_of_expr e)^ ")"
   | Postop(e, op)      -> "(" ^ (string_of_expr e) ^(string_of_op_p op)^ ")"
   | Assign(s,e)         ->  "Assign(" ^s^ "=" ^(string_of_expr e)^ ")"
   | Semi(e1)            ->  (string_of_expr e1)^ ";\n"
+  | SemiWithExpr(e1, e2)        ->  (string_of_expr e1)^";\n"^(string_of_expr e2)
   | IfThen(e1,e2)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" })\n"
   | IfThenElse(e1,e2,e3)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" } Else {\n"^(string_of_expr e3)^" })\n"
   | This             -> "this"
@@ -120,7 +122,7 @@ let string_of_static_bool = function
   | false -> "non-static"
 
 let string_of_method = function
-  | Method(static,s1,s2,p,e) -> "Method("^string_of_static_bool static^ " " ^s1^" "^s2^"(Params("^(string_of_params p)^")){"^(string_of_exprs e)^"})"
+  | Method(static,s1,s2,p,e) -> "Method("^string_of_static_bool static^ " " ^s1^" "^s2^"(Params("^(string_of_params p)^")){"^(string_of_expr e)^"})"
 
 let string_of_attr = function
   | Attr (t, id)-> "Attr(Type=" ^t^ " Var=" ^id^ ")"

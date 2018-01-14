@@ -101,18 +101,14 @@ attribute:
     {StaticAttrWithAssign(t, id, e)}
 
 method1:
-  | STATIC t=UPPERIDENT id=LOWERIDENT LPAR p=params RPAR LBRACE e=exprs RBRACE
+  | STATIC t=UPPERIDENT id=LOWERIDENT LPAR p=params RPAR LBRACE e=expr RBRACE
       { Method(true, t, id, p, e) }
-  | STATIC t=UPPERIDENT id=LOWERIDENT LPAR RPAR LBRACE e=exprs RBRACE
+  | STATIC t=UPPERIDENT id=LOWERIDENT LPAR RPAR LBRACE e=expr RBRACE
       { Method(true, t, id, [], e) }
-  | t=UPPERIDENT id=LOWERIDENT LPAR p=params RPAR LBRACE e=exprs RBRACE
+  | t=UPPERIDENT id=LOWERIDENT LPAR p=params RPAR LBRACE e=expr RBRACE
       { Method(false, t, id, p, e) }
-  | t=UPPERIDENT id=LOWERIDENT LPAR RPAR LBRACE e=exprs RBRACE
+  | t=UPPERIDENT id=LOWERIDENT LPAR RPAR LBRACE e=expr RBRACE
       { Method(false, t, id, [], e) }
-
-exprs:
-    | {[]}
-    | e = expr r=exprs {e::r}
 
 param:
   | t=UPPERIDENT id=LOWERIDENT
@@ -129,6 +125,8 @@ expr:
       { e }
   | e=expr comment+
       { e }
+  | e1=expr SEMICOLON e2=expr
+      { SemiWithExpr(e1, e2)}
   | e1=expr SEMICOLON
       { Semi(e1)}
   | LPAR e=expr RPAR
@@ -151,8 +149,8 @@ expr:
       { Bool b }
   | n=NULL
       { Null }
-  | r=RETURN
-      { Return }
+  | r=RETURN e=expr
+      { Return(e) }
   | s=STRING
       { String s}
   | id=LOWERIDENT
