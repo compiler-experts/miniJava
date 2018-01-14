@@ -105,7 +105,7 @@ let rec string_of_expr exp =
   | IfThenElse(e1,e2,e3)    ->  "If("^(string_of_expr e1)^") {\n"^(string_of_expr e2 )^" } Else {\n"^(string_of_expr e3)^" })\n"
   | This             -> "this"
   | Invoke(e, s, l)  -> "Invoke("^(string_of_expr e)^"."^s^"("^(string_of_exprs l)^"))"
-
+  | New(t)           -> "New("^t^")" 
 and string_of_exprs = function
   | [] -> ""
   | e::l -> string_of_expr e ^ string_of_exprs l

@@ -4,10 +4,10 @@ class Point {
 	static Int pointCount;
 	Int x;
 	Int y;
-
 	static Int getPointCount(){
 		this.test();
 		a = 5;
+		new String;
 	}
 	
 	String test(Int i, String s){
