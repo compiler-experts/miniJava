@@ -77,15 +77,20 @@ If you are a team member of the project, please follow the [Working Standard](./
 - [x] White Space
 - [x] Comments
 - [x] Identifiers
-- [ ] Keywords
-    - [x] else
+- [x] Keywords
     - [ ] for
-    - [x] if
-    - [ ] switch
     - [ ] while
-- [ ] Literals
-    - [x] int
-- [ ] Separators
+    - [x] else
+    - [x] if
+- [x] Literals
+    - [x] Int
+    - [x] String
+- [x] Separators
+    - [x] brace
+    - [x] parenthese
+    - [x] dot
+    - [x] comma
+    - [x] semicolon
 - [x] Operators
     - [x] `=` Simple Assignment Operator
     - [x] `+ - * / %` Arithmetic Operators
@@ -95,11 +100,22 @@ If you are a team member of the project, please follow the [Working Standard](./
 
 #### Classes
 
-- [ ] Keywords
-    - [ ] class
-    - [ ] static
-    - [ ] extends
+- [x] Keywords
+    - [x] class
+    - [x] static
+    - [x] extends
+    - [x] return
     - [ ] new
+- [x] Classes
+    - [x] Class Declaration
+        - [x] simple class declaration
+        - [x] simple class declaration with extends
+    - [x] Field Declarations
+        - [x] static Fields
+        - [x] non-static Fields
+    - [x] Method Declarations
+        - [x] static Methods
+        - [x] non-static Methods
 ---
 
 ### Second part: The typer and the execution support
