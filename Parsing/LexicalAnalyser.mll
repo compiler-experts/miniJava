@@ -2,7 +2,6 @@
   open SyntaxAnalyser
 
   let print_lexeme = function
-    | EOL     -> print_string "EOL"
     | EOF     -> print_string "EOF"
     | PLUS    -> print_string "PLUS"
     | MINUS   -> print_string "MINUS"

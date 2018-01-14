@@ -8,7 +8,7 @@
 
 /* Tokens */
 /* Seperators */
-%token EOF EOL LPAR RPAR SEMICOLON LBRACE RBRACE COMMA
+%token EOF LPAR RPAR SEMICOLON LBRACE RBRACE COMMA
 
 /* Operators*/
 %token ASSIGN
@@ -113,7 +113,6 @@ param:
       { Param(t,id) }
 
 params:
-  | { [] }
   | t=UPPERIDENT id=LOWERIDENT
       { [Param(t,id)] }
   | t=UPPERIDENT id=LOWERIDENT COMMA r=param+

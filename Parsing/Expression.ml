@@ -57,14 +57,6 @@ let get_op_u = function
   | Uincre -> fun x -> x + 1
   | Udecre -> fun x -> x - 1
 
-let get_op_b op x y =
-  match op with
-  | Badd -> x + y
-  | Bsub -> x - y
-  | Bmul -> x * y
-  | Bdiv -> x / y
-  | Bmod -> x mod y
-
 let string_of_op_u = function
   | Uplus -> "+"
   | Uminus -> "-"

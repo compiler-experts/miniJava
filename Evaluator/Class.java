@@ -6,7 +6,7 @@ class Point{
 	Int	test(){
 		i=5;
 	}
-	static String test(){
+	static String test(Int i, String s){
 		s="test";
 		// comment
 		this.test();
@@ -17,6 +17,6 @@ class Point{
 
 class Point1 extends Point
 {
-	j;
-	i=10;	
+	static String test(){
+	}
 }
