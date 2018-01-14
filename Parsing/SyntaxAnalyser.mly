@@ -95,6 +95,10 @@ attribute:
     {Attr(t, id)}
   | t=UPPERIDENT id=LOWERIDENT ASSIGN e=expr 
     {AttrWithAssign(t, id, e)}
+  | STATIC t=UPPERIDENT id=LOWERIDENT
+    {StaticAttr(t, id)}
+  | STATIC t=UPPERIDENT id=LOWERIDENT ASSIGN e=expr
+    {StaticAttrWithAssign(t, id, e)}
 
 method1:
   | STATIC t=UPPERIDENT id=LOWERIDENT LPAR p=params RPAR LBRACE e=exprs RBRACE

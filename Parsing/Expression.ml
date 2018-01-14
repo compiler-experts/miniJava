@@ -35,6 +35,8 @@ type mthd =
 type attr =
   | Attr of string * string
   | AttrWithAssign of string * string * expression
+  | StaticAttr of string * string
+  | StaticAttrWithAssign of string * string * expression
 
 type attr_or_method =
   | Attribute of attr
@@ -121,6 +123,8 @@ let string_of_method = function
 let string_of_attr = function
   | Attr (t, id)-> "Attr(Type=" ^t^ " Var=" ^id^ ")"
   | AttrWithAssign(t, id, e) -> "AttrWithAssign(Type=" ^t^ " Var=" ^id^ (string_of_expr e)^ ")"
+  | StaticAttr (t, id)-> "Attr(Static Type=" ^t^ " Var=" ^id^ ")"
+  | StaticAttrWithAssign(t, id, e) -> "AttrWithAssign(Static Type=" ^t^ " Var=" ^id^ (string_of_expr e)^ ")"
 
 let string_of_attr_or_method = function
   | Attribute a -> string_of_attr a

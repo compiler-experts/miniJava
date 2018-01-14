@@ -1,7 +1,7 @@
 class Point{
 	// Point class
-	String j;
-	Int i=10;
+	static String j;
+	static Int i=10;
 	String s="tt";
 	Int	test(){
 		i=5;
