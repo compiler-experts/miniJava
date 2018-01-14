@@ -91,8 +91,10 @@ attribute_or_method:
   | comment* m=method1 { Method_t(m) }
 
 attribute:
-  | id=LOWERIDENT    {Attr(id)}
-  | id=LOWERIDENT ASSIGN e=expr {AttrWithAssign(id,e)}
+  | t=UPPERIDENT id=LOWERIDENT 
+    {Attr(t, id)}
+  | t=UPPERIDENT id=LOWERIDENT ASSIGN e=expr 
+    {AttrWithAssign(t, id, e)}
 
 method1:
   | STATIC t=UPPERIDENT id=LOWERIDENT LPAR p=params RPAR LBRACE e=exprs RBRACE

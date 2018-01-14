@@ -1,8 +1,8 @@
 class Point{
 	// Point class
-	j;
-	i=10;
-	s="tt";
+	String j;
+	Int i=10;
+	String s="tt";
 	Int	test(){
 		i=5;
 	}
