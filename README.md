@@ -14,6 +14,15 @@ git clone https://redmine-df.telecom-bretagne.eu/git/f2b304_compiler_cn
 
 then input your Username and Password in the command prompt
 
+## The project structure
+
+The project is divided by 2 parts
+
+- phase1: the first delivery which contains the lexical and syntax analyzer for the language minijava
+- phase2: the second delivery which contains the semantic analyzer for the language minijava based on the lexical and syntax analyzer that offered by professors
+
+to build or execute the compiler, you should entre one of these folder, `cd ./phase1` or `cd ./phase2`
+
 ## How to build the compiler
 
 Using the shell script `build`
@@ -124,4 +133,37 @@ If you are a team member of the project, please follow the [Working Standard](./
 
 #### Type
 
-### Execution
+- [] The construction of the class definition environment. This environment contains the type of methods for each class. This phase ignores the attributes (which are not visible outside the class) and the method bodies.
+- [] The second phase is concerned with verifying that the inside of classes is correct (mainly the body of methods). She will also make sure of the correction of the higher level expression.
+
+#### Execution
+
+Evaluation and execute by certain means
+
+##### 1. Complilation
+
+Construction of descriptors and tables
+
+Construction of descriptors
+- [] object descriptor ? object descriptor space
+- [] class descriptor ? class descriptor space
+- [] methode descriptor ? methode descriptor space
+
+Allocations
+
+working from specail cases:
+- object -> null, true, false
+- class -> Object, Int, Boolean, String
+
+- [] allocation of special classes
+- [] allocation of special objects
+- [] allocation of class if it is not allocated
+
+##### 2. Execution
+
+
+## Problems
+
+### Problems of Type
+
+### Problems of Execution

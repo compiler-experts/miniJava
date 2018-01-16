@@ -1,0 +1,13 @@
+PKG ANSITerminal 
+S ./Main
+S ./Parsing
+S ./Typing
+S ./_build
+S ./_build/Main
+S ./_build/Parsing
+S ./_build/Typing
+S ./_build/Utils
+B ./_build
+B ./_build/Parsing
+B ./_build/Typing
+B ./_build/Utils
