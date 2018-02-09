@@ -4,7 +4,11 @@ let execute lexbuf verbose =
   try 
     let ast = compilationUnit Lexer.token lexbuf in
     print_endline "successfull parsing";
-    if verbose then AST.print_program ast 
+    if verbose then AST.print_program ast;
+    print_endline "===================";
+    Typing.typing ast;
+    if verbose then AST.print_program ast;
+    print_endline "successfull typing";
   with 
     | Error ->
       print_string "Syntax error: ";

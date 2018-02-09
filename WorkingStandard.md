@@ -30,6 +30,23 @@ We use continous integration as collaboration mode, the reason is explained [her
 11. If your have confilts, plase follow the steps [here](https://help.github.com/articles/resolving-a-merge-conflict-using-the-command-line/)
 12. `git push` to push the latest main branch, then others can develop new features based on your contributions
 
+## How to debug
+
+### How to debug shift/reduce conflicts
+
+use the following flag to compile the runnable
+
+```sh
+ocamlbuild Main.byte -yaccflag --dump
+```
+
+then analyse the automaton at the folder `./_build/Parsing/Parser.automaton`
+
+:warning: the orginal code offered by professor has 2 shift/reduce conflicts
+
+- one conflict on `OP_SUB` `OP_INC` `OP_DEC` `LPAREN` `IDENTIFIER`
+- another conflict on `ELSE`
+
 ## How to use an existing ocaml library
 
 If you want to reuse an existing ocaml library. Start by installing it with opam. 
