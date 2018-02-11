@@ -1,0 +1,4 @@
+exception ClassAlreadyExists of string
+exception AttributeAlreadyExists of string
+exception MethodAlreadyExists of string
+exception ConstructorAlreadyExists of string
