@@ -1,5 +1,5 @@
 open AST
-
+open TypeError
 type func_info = {
   ftype: Type.t;
   fargs: argument list
@@ -13,18 +13,66 @@ type class_env = {
   parent : Type.ref_type;
 }
 
+
+
+let check_constructors env current_class consts =
+  let consts_table = (Hashtbl.find env current_class).constructors in
+  if (Hashtbl.mem consts_table consts.cname) <> true
+  then (
+    print_const "   " consts;
+    Hashtbl.add consts_table consts.cname
+    {ftype = Type.Ref {tpath=[]; tid=current_class}; 
+     fargs = consts.cargstype }
+  )
+  else raise(ConstructorAlreadyExists(consts.cname))
+
+
+(* check if method has alread exist in hash table *)
+let check_methods env current_class meths =
+  let meths_table = (Hashtbl.find env current_class).methods in
+  if (Hashtbl.mem meths_table meths.mname) <> true
+  then (
+    print_method "   " meths;
+    Hashtbl.add meths_table meths.mname
+     {ftype = meths.mreturntype; 
+      fargs = meths.margstype }
+  )
+  (*TODO: check override and overload*)
+  else raise(MethodAlreadyExists(meths.mname)) 
+
+(* check if attribute has already exist in hash table *)
+let check_attributes env current_class attrs =
+  let attrs_table = (Hashtbl.find env current_class).attributes in
+  if (Hashtbl.mem attrs_table attrs.aname) <> true
+  then (
+    print_attribute "   " attrs;
+    Hashtbl.add attrs_table attrs.aname attrs.atype
+  )
+  else raise(AttributeAlreadyExists(attrs.aname))
+
+(* check class body*)
+let check_class env c current_class =
+  List.iter (check_attributes env current_class) c.cattributes;
+  List.iter (check_methods env current_class) c.cmethods ;
+  List.iter (check_constructors env current_class) c.cconsts 
+
 (* add to class environment *)
 let add_to_env class_env t =
   match t.info with
   | Class c -> 
+    let current_class = t.id in
     if (Hashtbl.mem class_env t.id) <> true
-    then (Hashtbl.add class_env t.id
-      { attributes = (Hashtbl.create 17);
+    then (
+      Hashtbl.add class_env t.id
+        {attributes = (Hashtbl.create 17);
         constructors = (Hashtbl.create 17);
         methods = (Hashtbl.create 17);
-        parent = c.cparent })
+        parent = c.cparent };
+      check_class class_env c current_class 
+    )      
+    else raise(ClassAlreadyExists(t.id))
   | Inter -> ()
 
 let typing ast = 
-  let class_env = Hashtbl.create 17 in 
-  List.iter (add_to_env class_env) ast.type_list;
+  let class_env = Hashtbl.create 17  in 
+  List.iter (add_to_env class_env) ast.type_list
