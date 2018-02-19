@@ -84,8 +84,8 @@ type expression_desc =
 and expression = 
     {
       edesc : expression_desc;
-(*      eloc : Location.t;
-      mutable etype : Type.t option;*)
+      (* eloc : Location.t; *)
+      mutable etype : Type.t option;
     }
 
 type switchLabel =
@@ -287,10 +287,9 @@ let rec string_of_expression_desc = function
        
 and string_of_expression e = 
   let s = string_of_expression_desc e.edesc in
-  s(*
     match e.etype with
       | None -> s
-      | Some t -> "("^s^" : "^(Type.stringOf t)^")"*)
+      | Some t -> "("^s^" : "^(Type.stringOf t)^")"
 
 let print_attribute tab a =
   print_string tab;
