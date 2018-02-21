@@ -1,12 +1,14 @@
 open AST
 open TypeError
+open Type
+
 type func_info = {
   ftype: Type.t;
   fargs: argument list
 }
 
-type current_env = {
-  returnType: Type.t;
+type curr_env = {
+  returntype : Type.t;
   variables: (string, Type.t) Hashtbl.t
 }
 
@@ -42,6 +44,50 @@ let verify_argument current_env arguments =
   )
   else raise(ArgumentAlreadyExists(arguments.pident))
 
+(* check the type of value *)
+let verify_value v =
+  match v with
+  | String s -> Some(Ref({ tpath = []; tid = "String" }))
+  | Int i -> Some(Primitive(Int))
+  | Float f -> Some(Primitive(Float))
+  | Char c -> Some(Primitive(Char))
+  | Null -> None
+  | Boolean b -> Some(Primitive(Boolean))
+
+
+
+(* check the type of the assignment operation *)
+let verify_assignop_type t1 t2 =
+  if t1 <> t2 then
+    begin
+      raise(TypeError.WrongTypesAssignOperation(t1, t2))
+    end
+
+(* check the type of the expressions *)
+let rec verify_expression env current_env e =
+  print_string(string_of_expression_desc(e.edesc));
+  match e.edesc with
+  | New (None,n,al) -> () (*TODO*)
+  (* | NewArray (Some n1,n2,al) -> () (*TODO*) *)
+  | Call (r,m,al) -> () (*TODO*)
+  | Attr (r,a) -> () (*TODO*)
+  | If (e1, e2, e3) -> () (*TODO*)
+  | Val v ->
+      e.etype <- verify_value v
+  | Name s -> () (*TODO*)
+  | ArrayInit el -> () (*TODO*)
+  | Array (e,el) -> () (*TODO*)
+  | AssignExp (e1,op,e2) -> () (*TODO*)
+  | Post (e,op) -> () (*TODO*)
+  | Pre (op,e) -> () (*TODO*)
+  | Op (e1,op,e2) -> () (*TODO*)
+  | CondOp (e1,e2,e3) -> () (*TODO*)
+  | Cast (t,e) -> () (*TODO*)
+  | Type t -> () (*TODO*)
+  | ClassOf t-> () (*TODO*)
+  | Instanceof (e1, t)-> () (*TODO*)
+  | VoidClass -> () (*TODO*)
+  
 let verify_statement current_env envs statement =
   match statement with
   | VarDecl dl -> () (*TODO*)
@@ -63,19 +109,27 @@ let verify_constructors envs current_class consts =
   (* print_endline ("=====verify_constructors======");
   print_class_env(Hashtbl.find envs current_class);
   print_endline ("=====verify_constructors======"); *)
-  let current_env = {returnType = Type.Ref({ tpath = []; tid = consts.cname }); variables = Hashtbl.create 17 } in
+  let current_env = {returntype = Type.Ref({ tpath = []; tid = consts.cname }); variables = Hashtbl.create 17 } in
   List.iter (verify_argument current_env) consts.cargstype;
   List.iter (verify_statement current_env envs) consts.cbody
 
 let verify_methods envs current_class meths =
-  let current_env = {returnType = meths.mreturntype; variables = Hashtbl.create 17 } in
+  let current_env = {returntype = meths.mreturntype; variables = Hashtbl.create 17 } in
   List.iter (verify_argument current_env) meths.margstype;
   List.iter (verify_statement current_env envs) meths.mbody
 
-let verify_attributes envs attrs current_class =
-  (*TODO*)
-  ()
+(* check the type of the attibutes *)
+let verify_attributes envs current_class attrs = 
+  match attrs.adefault with
+  | Some e ->
+    let current_env = {returntype = Type.Void; variables = Hashtbl.create 1} in
+    verify_expression envs current_env e;
+    (* Verify the assignment operation's type is coherent *)
+    let mytype = Some(attrs.atype) in
+    verify_assignop_type mytype e.etype 
+  | None -> ()
 
+(* check the type of the class *)
 let verify_class envs c current_class =
   List.iter (verify_attributes envs current_class) c.cattributes;
   List.iter (verify_methods envs current_class) c.cmethods;
@@ -98,7 +152,6 @@ let add_constructors env current_class consts =
      fargs = consts.cargstype }
   )
   else raise(ConstructorAlreadyExists(consts.cname))
-
 
 (* check if method has alread exist in hash table *)
 let add_methods env current_class meths =
