@@ -1,6 +1,6 @@
 class I {
 
-	int a = 5;
+	boolean a = (56 == 5);
 	float b = 8.5;
 	boolean a2 = false;
 	String c = "yes";

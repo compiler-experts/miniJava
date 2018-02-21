@@ -63,6 +63,13 @@ let verify_assignop_type t1 t2 =
       raise(TypeError.WrongTypesAssignOperation(t1, t2))
     end
 
+(* check the type of the operation eg: ==, + *)
+let verify_operation_type t1 op t2 =
+  if t1 <> t2 then
+    begin
+      raise(TypeError.WrongTypesOperation(t1, t2));
+  end
+
 (* check the type of the expressions *)
 let rec verify_expression env current_env e =
   print_string(string_of_expression_desc(e.edesc));
@@ -80,7 +87,13 @@ let rec verify_expression env current_env e =
   | AssignExp (e1,op,e2) -> () (*TODO*)
   | Post (e,op) -> () (*TODO*)
   | Pre (op,e) -> () (*TODO*)
-  | Op (e1,op,e2) -> () (*TODO*)
+  | Op (e1,op,e2) -> 
+      verify_expression env current_env e1;
+      verify_expression env current_env e2;
+      verify_operation_type e1.etype op e2.etype;
+      (match op with
+      | Op_cor | Op_cand | Op_eq | Op_ne | Op_gt | Op_lt | Op_ge | Op_le -> e.etype <- Some(Primitive(Boolean))
+      | Op_or | Op_and | Op_xor | Op_shl | Op_shr | Op_shrr | Op_add | Op_sub | Op_mul | Op_div | Op_mod -> e.etype <- e1.etype)
   | CondOp (e1,e2,e3) -> () (*TODO*)
   | Cast (t,e) -> () (*TODO*)
   | Type t -> () (*TODO*)
