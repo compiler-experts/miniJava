@@ -130,7 +130,7 @@ let add_local_variable current_env id t =
   then Hashtbl.add current_env.variables id t
   else raise(DuplicateLocalVariable((Type.stringOf t)^" "^id))
 
-let verify_statement current_env envs statement =
+let rec verify_statement current_env envs statement =
   match statement with
   | VarDecl dl ->
     List.iter (fun (t,id,init) ->
@@ -141,9 +141,8 @@ let verify_statement current_env envs statement =
       | Some e -> (verify_expression envs current_env e;
         let s = string_of_expression_desc e.edesc in
         match e.etype with
-          (* check int j = i*)
           | None -> print_string ("["^s^"]"); (*TODO*)
-          (* check int i =2*)
+          (* check int i = 2, int j = i *)
           | Some real_t -> (
             if real_t <> t
             then raise(IncompatibleTypes((Type.stringOf real_t)^" cannnot be converted to "^(Type.stringOf t)^" for "^id))
@@ -152,7 +151,11 @@ let verify_statement current_env envs statement =
         )
       );
 	  ) dl
-  | Block b -> () (*TODO*)
+  | Block b ->
+    let block_env = { returntype = current_env.returntype;
+      variables = Hashtbl.copy current_env.variables;
+      this_class = current_env.this_class } in
+    List.iter (verify_statement block_env envs) b
   | Nop -> () (*TODO*)
   | Expr e -> () (*TODO*)
   | Return None -> () (*TODO*)
