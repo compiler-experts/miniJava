@@ -9,3 +9,4 @@ exception MethodAlreadyExists of string
 exception ConstructorAlreadyExists of string
 exception WrongTypesAssignOperation of Type.t option * Type.t option
 exception WrongTypesOperation of Type.t option * Type.t option
+exception UnknowVariable of string

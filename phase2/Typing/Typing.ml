@@ -9,7 +9,8 @@ type func_info = {
 
 type curr_env = {
   returntype : Type.t;
-  variables: (string, Type.t) Hashtbl.t
+  variables: (string, Type.t) Hashtbl.t;
+  this_class: string
 }
 
 (* class definition environment *)
@@ -54,13 +55,34 @@ let verify_value v =
   | Null -> None
   | Boolean b -> Some(Primitive(Boolean))
 
-
+let verify_name s env current_env = 
+  (* first find in current_env *)
+  if (Hashtbl.mem current_env.variables s) <> true then
+    begin
+      (* second find in global env *)
+      if (Hashtbl.mem (Hashtbl.find env current_env.this_class).attributes s) <> true 
+      then raise(UnknowVariable(s))
+      else Some(Hashtbl.find (Hashtbl.find env current_env.this_class).attributes s)
+    end
+  else Some(Hashtbl.find current_env.variables s)
 
 (* check the type of the assignment operation *)
 let verify_assignop_type t1 t2 =
   if t1 <> t2 then
     begin
       raise(TypeError.WrongTypesAssignOperation(t1, t2))
+      match t1 with
+      | Some t ->
+        print_string "\n************************\n";
+        print_string ((Type.stringOf t));
+        print_string "\n************************\n";
+        match t2 with
+        | Some t ->
+          print_string "\n++++++++++++++++++++++\n";
+          print_string ((Type.stringOf t));
+          print_string "\n++++++++++++++++++++++\n";
+        | None -> ()
+      | None -> ()
     end
 
 (* check the type of the operation eg: ==, + *)
@@ -68,7 +90,7 @@ let verify_operation_type t1 op t2 =
   if t1 <> t2 then
     begin
       raise(TypeError.WrongTypesOperation(t1, t2));
-  end
+    end
 
 (* check the type of the expressions *)
 let rec verify_expression env current_env e =
@@ -81,10 +103,11 @@ let rec verify_expression env current_env e =
   | If (e1, e2, e3) -> () (*TODO*)
   | Val v ->
       e.etype <- verify_value v
-  | Name s -> () (*TODO*)
+  | Name s -> 
+      e.etype <- verify_name s env current_env
   | ArrayInit el -> () (*TODO*)
   | Array (e,el) -> () (*TODO*)
-  | AssignExp (e1,op,e2) -> () (*TODO*)
+  | AssignExp (e1,op,e2) -> () (*TODO*) 
   | Post (e,op) -> () (*TODO*)
   | Pre (op,e) -> () (*TODO*)
   | Op (e1,op,e2) -> 
@@ -147,12 +170,12 @@ let verify_constructors envs current_class consts =
   (* print_endline ("=====verify_constructors======");
   print_class_env(Hashtbl.find envs current_class);
   print_endline ("=====verify_constructors======"); *)
-  let current_env = {returntype = Type.Ref({ tpath = []; tid = consts.cname }); variables = Hashtbl.create 17 } in
+  let current_env = {returntype = Type.Ref({ tpath = []; tid = consts.cname }); variables = Hashtbl.create 17; this_class = current_class} in
   List.iter (verify_argument current_env) consts.cargstype;
   List.iter (verify_statement current_env envs) consts.cbody
 
 let verify_methods envs current_class meths =
-  let current_env = {returntype = meths.mreturntype; variables = Hashtbl.create 17 } in
+  let current_env = {returntype = meths.mreturntype; variables = Hashtbl.create 17; this_class = current_class} in
   List.iter (verify_argument current_env) meths.margstype;
   List.iter (verify_statement current_env envs) meths.mbody
 
@@ -160,7 +183,7 @@ let verify_methods envs current_class meths =
 let verify_attributes envs current_class attrs = 
   match attrs.adefault with
   | Some e ->
-    let current_env = {returntype = Type.Void; variables = Hashtbl.create 1} in
+    let current_env = {returntype = Type.Void; variables = Hashtbl.create 17; this_class = current_class} in
     verify_expression envs current_env e;
     (* Verify the assignment operation's type is coherent *)
     let mytype = Some(attrs.atype) in
