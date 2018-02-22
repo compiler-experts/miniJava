@@ -70,7 +70,7 @@ let verify_name s env current_env =
 let verify_assignop_type t1 t2 =
   if t1 <> t2 then
     begin
-      raise(TypeError.WrongTypesAssignOperation(t1, t2))
+      raise(TypeError.WrongTypesAssignOperation(t1, t2));
       match t1 with
       | Some t ->
         print_string "\n************************\n";
