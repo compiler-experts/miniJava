@@ -4,7 +4,8 @@ class I {
 	float b = 8.5;
 	boolean a2 = false;
 	String c = "yes";
-	char d = 'q';
+	int i = 5;
+	int j = i;
 	private String func1 (int a, int b) {
 		int b = 1;
 		return "YES";
