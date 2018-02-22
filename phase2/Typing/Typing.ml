@@ -87,10 +87,35 @@ let rec verify_expression env current_env e =
   | ClassOf t-> () (*TODO*)
   | Instanceof (e1, t)-> () (*TODO*)
   | VoidClass -> () (*TODO*)
-  
+
+(* add a local variable to the current environment *)
+let add_local_variable current_env id t =
+  if (Hashtbl.mem current_env.variables id) <> true
+  then Hashtbl.add current_env.variables id t
+  else raise(DuplicateLocalVariable((Type.stringOf t)^" "^id))
+
 let verify_statement current_env envs statement =
   match statement with
-  | VarDecl dl -> () (*TODO*)
+  | VarDecl dl ->
+    List.iter (fun (t,id,init) ->
+      (match init with
+      (* check int i;*)
+      | None -> add_local_variable current_env id t
+      (* check int j = 2; or int j = i;*)
+      | Some e -> (verify_expression envs current_env e;
+        let s = string_of_expression_desc e.edesc in
+        match e.etype with
+          (* check int j = i*)
+          | None -> print_string ("["^s^"]"); (*TODO*)
+          (* check int i =2*)
+          | Some real_t -> (
+            if real_t <> t
+            then raise(IncompatibleTypes((Type.stringOf real_t)^" cannnot be converted to "^(Type.stringOf t)^" for "^id))
+            else add_local_variable current_env id t
+          )
+        )
+      );
+	  ) dl
   | Block b -> () (*TODO*)
   | Nop -> () (*TODO*)
   | Expr e -> () (*TODO*)

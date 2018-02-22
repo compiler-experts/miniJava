@@ -1,4 +1,4 @@
-# The Working Standard for the minijava Project
+# The to contribute to the minijava Project
 
 ## How to collaborate
 
