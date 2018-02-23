@@ -1,16 +1,20 @@
 open AST
 open Hashtbl
 
-(* This is the compilation file *)
-type exe_value = 
-  | VInt of int
-  | VString of string
-  | VAdres of int				(* l'adresse *)
-  | VNull 
-  | VName of string
-  | VBool of bool 	
-  | VAttr of string * string
-
-let string_value value = match value with
+type globalData =
+{
+  methodTable : (string, string) Hashtbl.t;
+  classTable : (string, string) Hashtbl.t
+}
 
 
+let rec compileClass methodTable classTable ast asttype =
+  match asttype.info with
+  | Class c ->  print_endline("name of class: " ^ asttype.id)
+  | Inter -> ()
+
+
+
+let compileAST ast =
+  let programData = { methodTable = Hashtbl.create 20; classTable = Hashtbl.create 20 } in
+  List.iter (compileClass programData.methodTable programData.classTable ast) ast.type_list;
