@@ -37,13 +37,17 @@ let addMethodsToMethodTable className methodTable cmethod =
 	let nameMethod = className ^ "_" ^ cmethod.mname in
 	Hashtbl.add methodTable nameMethod cmethod
 
-
+(*
+		ulity: add methods in the Hashtbl classTable
+*)
 let addToClassTable classTable className c =
   let methodsClass = Hashtbl.create 20 in
   List.iter (addMethodsToClassDesciptor className methodsClass) c.cmethods;
 	Hashtbl.add classTable className (ClassDescriptor({name=className;methods=methodsClass}))
 
-
+(*
+	ulity: add methods in the Hashtbl methodTable
+*)
 let addToMethodTable methodTable className c =
 	List.iter (addMethodsToMethodTable className methodTable) c.cmethods
 
@@ -58,7 +62,9 @@ let verifyHashtbl nameHashtbl key =
   | "Object" -> true
 
 
-(*asttype ={  mutable modifiers : modifier list; id : string; info : type_info;}*)
+(*asttype ={  mutable modifiers : modifier list; id : string; info : type_info;}
+ulity: add class and methods in the Hashtbl
+*)
 let compileClass methodTable classTable ast asttype =
   match asttype.info with
   | Class c -> if(verifyHashtbl classTable asttype.id) = false
