@@ -221,8 +221,19 @@ let rec verify_statement current_env envs statement =
     )
   | Throw e -> () (*TODO*)
   | While(e,s) -> () (*TODO*)
-  | If(e,s,None) -> () (*TODO*)
-  | If(e,s1,Some s2) -> () (*TODO*)
+  | If(e,s,None) -> (verify_expression envs current_env e; 
+    verify_statement current_env envs s;
+    match e.etype with
+    | None -> raise(UnknowActualType("unknow type in if condition"))
+    | Some actual_t -> if actual_t <> Primitive(Boolean)
+      then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to boolean")))
+  | If(e,s1,Some s2) -> (verify_expression envs current_env e;
+    verify_statement current_env envs s1;
+    verify_statement current_env envs s2;
+    match e.etype with
+      | None -> raise(UnknowActualType("unknow type in if else condition"))
+      | Some actual_t -> if actual_t <> Primitive(Boolean)
+        then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to boolean")))
   | For(fil,eo,el,s) -> () (*TODO*)
   | Try(body,catch,finally) -> () (*TODO*)
 
