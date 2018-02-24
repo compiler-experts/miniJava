@@ -43,7 +43,7 @@ let print_class_envs class_envs =
 let compare_args a1 a2 = 
   match a1.etype with
   | None -> raise(ArgumentTypeNotExiste)
-  | Some t -> if(t <> a2.ptype) then raise(ArgumentTypeNotMatch)
+  | Some t -> if(t <> a2.ptype) then raise(ArgumentTypeNotMatch("arguments type not match"))
 
 (* check if the input arguments' type is coherent *)
 let verify_invoke_args args const_info func_name = 
@@ -55,6 +55,7 @@ let verify_invoke_args args const_info func_name =
       (* Use List.iter2 to compare to list*)
       List.iter2 compare_args args const_info
     end
+
 (* verify declared types of variables in constructor arguments or methodes arguments *)
 let verify_declared_args current_env arguments =
   if (Hashtbl.mem current_env.variables arguments.pident) <> true
@@ -111,9 +112,27 @@ let verify_operation_type t1 op t2 =
       raise(WrongTypesOperation(t1, t2));
     end
 
+(* check the type of call expression when it existe the method name, the arguments and global env *)
+let verify_call_expr meth_name args env class_name = 
+  let meths_table = (Hashtbl.find env class_name).methods in
+  (* first check if method defines in class *)
+  if(Hashtbl.mem meths_table meth_name) <> true then
+    raise(UnknownMethod(meth_name))
+  else
+    begin
+        let meth_info = Hashtbl.find meths_table meth_name in 
+      try
+        verify_invoke_args args meth_info.fargs class_name;
+        Some(meth_info.ftype);
+      with
+        | ArgumentTypeNotExiste -> raise(ArgumentTypeNotExiste)
+        | ArgumentTypeNotMatch s-> raise(ArgumentTypeNotMatch("Arguments\' type in "^meth_name^" not match"))
+        | WrongInvokedArgumentsLength s -> raise(WrongInvokedArgumentsLength(s))
+    end
+
 (* check the type of the expressions *)
 let rec verify_expression env current_env e =
-  (* print_string(string_of_expression_desc(e.edesc)); *)
+  print_string(string_of_expression_desc(e.edesc));
   match e.edesc with
   | New (None,n,al) -> 
     List.iter (verify_expression env current_env) al;
@@ -138,12 +157,21 @@ let rec verify_expression env current_env e =
               e.etype <- Some(consts_info.ftype)
             with
               | ArgumentTypeNotExiste -> raise(ArgumentTypeNotExiste)
-              | ArgumentTypeNotMatch -> raise(ArgumentTypeNotMatch)
+              | ArgumentTypeNotMatch s -> raise(ArgumentTypeNotMatch("Arguments\' type in "^lastClass^" not match"))
               | WrongInvokedArgumentsLength s -> raise(WrongInvokedArgumentsLength(s))
           end
       end
   (* | NewArray (Some n1,n2,al) -> () (*TODO*) *)
-  | Call (r,m,al) -> () (*TODO*)
+  | Call (r,m,al) ->
+    (match r with
+      | None -> (* when method is called without declaring class name*)
+        List.iter (verify_expression env current_env) al;
+        e.etype <- verify_call_expr m al env current_env.this_class
+      | Some c ->
+        List.iter (verify_expression env current_env) al;
+        let class_name = string_of_expression(c) in
+        e.etype <- verify_call_expr m al env class_name
+    )
   | Attr (r,a) -> () (*TODO*)
   | If (e1, e2, e3) -> () (*TODO*)
   | Val v ->
