@@ -7,6 +7,8 @@ type classDescriptor =
 {
 	name : string;
 	methods : (string, string) Hashtbl.t;
+	constructors : (string, astconst) Hashtbl.t;
+	attributes : astattribute list
 }
 
 type globalClassDescriptor =
@@ -45,23 +47,7 @@ let printClassTable classTable =
 
 
 
-(*
-		ulity: add methods in the Hashtbl classTable
-*)
-let addMethodsToClassDesciptor className methods cmethod =
-	if(verifyHashtbl methods  cmethod.mname) = false
-	then begin
-		let nameMethod = className ^ "_" ^ cmethod.mname in
-		Hashtbl.add methods cmethod.mname nameMethod
-	end
-	else begin
-		print_endline("function " ^ cmethod.mname ^ " already defined")
-	end
 
-let addToClassTable classTable className c =
-  let methodsClass = Hashtbl.create 20 in
-  List.iter (addMethodsToClassDesciptor className methodsClass) c.cmethods;
-	Hashtbl.add classTable className (ClassDescriptor({name=className;methods=methodsClass}))
 
 (*
 	ulity: add methods in the Hashtbl methodTable
@@ -82,6 +68,28 @@ let addToMethodTable methodTable className c =
 	List.iter (addMethodsToMethodTable className methodTable) c.cmethods
 
 
+(*
+		ulity: add methods in the Hashtbl classTable
+*)
+let addMethodsToClassDesciptor className methods cmethod =
+	if(verifyHashtbl methods  cmethod.mname) = false
+	then begin
+		let nameMethod = className ^ "_" ^ cmethod.mname in
+		Hashtbl.add methods cmethod.mname nameMethod
+	end
+	else begin
+		print_endline("function " ^ cmethod.mname ^ " already defined")
+	end
+
+let addConstructorsToClassDesciptor constructorsClass constructor =
+	Hashtbl.add constructorsClass (constructor.cname) constructor
+
+let addToClassTable classTable className c =
+  let methodsClass = Hashtbl.create 20 in
+	let constructorsClass = Hashtbl.create 20 in
+  List.iter (addMethodsToClassDesciptor className methodsClass) c.cmethods;
+	List.iter (addConstructorsToClassDesciptor constructorsClass) c.cconsts;
+	Hashtbl.add classTable className (ClassDescriptor({name=className;methods=methodsClass;attributes=c.cattributes;constructors=constructorsClass}))
 
 
 
@@ -91,9 +99,10 @@ ulity: add class and methods in the Hashtbl
 let compileClass methodTable classTable ast asttype =
   match asttype.info with
   | Class c -> if(verifyHashtbl classTable asttype.id) = false
-                then begin  addToClassTable classTable asttype.id c;
-                            addToMethodTable methodTable asttype.id c
-														 end
+                then begin
+									addToClassTable classTable asttype.id c;
+                  addToMethodTable methodTable asttype.id c
+								end
 
   | Inter -> ()
 
