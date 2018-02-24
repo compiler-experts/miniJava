@@ -13,6 +13,6 @@ exception UnknownVariable of string
 exception UnknownClass of string
 exception WrongInvokedArgumentsLength of string
 exception ArgumentTypeNotExiste
-exception ArgumentTypeNotMatch
 exception InvalidMethodDeclaration of string
-exception TEST
+exception ArgumentTypeNotMatch of string
+exception UnknownMethod of string
