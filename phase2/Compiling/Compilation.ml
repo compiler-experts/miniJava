@@ -52,10 +52,12 @@ let printConstructor c=
 let printClassDescriptor globalClassDescriptor  =
 	match globalClassDescriptor with
 	| ClassDescriptor cd ->
-			Hashtbl.iter (fun key value ->print_string("\t\t");print_endline("functions:");print_string("\t\t\t");print_string(key ^ " : " );print_endline(value)) cd.methods;
+			print_string("\t\t");print_endline("functions:");Hashtbl.iter (fun key value ->print_string("\t\t\t");print_string(key ^ " : " );print_endline(value)) cd.methods;
 			print_string("\t\t");print_endline("attributs:");List.iter (print_attribute("\t\t\t")) cd.attributes;
 			print_string("\t\t");print_endline("constructors:");Hashtbl.iter (fun key value ->print_string("\t\t\t");print_string(key ^ " : " );printConstructor value) cd.constructors;
-			print_string("\t\t");print_endline("parent: ");print_string("\t\t\t");print_endline(cd.pname)
+			print_string("\t\t");print_endline("parent: ");print_string("\t\t\t");print_endline(cd.pname);
+			print_endline("-----------------------------------------------------------------------------------------")
+
 
 let printClassTable classTable =
 	print_endline("list of the classes ：");
@@ -85,7 +87,7 @@ let addToMethodTable methodTable className c =
 
 
 (*
-		ulity: add methods in the Hashtbl classTable
+		ulity: add methods, constructors,attributes in the Hashtbl classTable
 *)
 let addMethodsToClassDesciptor className methods cmethod =
 	if(verifyHashtbl methods  cmethod.mname) = false
@@ -100,6 +102,13 @@ let addMethodsToClassDesciptor className methods cmethod =
 let addConstructorsToClassDesciptor constructorsClass constructor =
 	Hashtbl.add constructorsClass (ListII.concat_map "," stringOf_argType constructor.cargstype) constructor
 
+let addMethodsToClassDesciptorFromParent classTable methodsClass c =
+	if (Hashtbl.mem classTable c.cparent.tid) = true
+	then begin
+		let parentClassDescriptor = Hashtbl.find classTable c.cparent.tid in
+		match parentClassDescriptor with
+		| ClassDescriptor cd -> Hashtbl.iter (fun key value -> if(Hashtbl.mem methodsClass key) <> true then Hashtbl.add methodsClass key value) cd.methods
+	end
 
 
 
@@ -108,6 +117,8 @@ let addToClassTable classTable className c =
 	let constructorsClass = Hashtbl.create 20 in
   List.iter (addMethodsToClassDesciptor className methodsClass) c.cmethods;
 	List.iter (addConstructorsToClassDesciptor constructorsClass) c.cconsts;
+	addMethodsToClassDesciptorFromParent classTable methodsClass c;
+
 	Hashtbl.add classTable className (ClassDescriptor({pname=c.cparent.tid ;name=className;methods=methodsClass;attributes=c.cattributes;constructors=constructorsClass}))
 
 

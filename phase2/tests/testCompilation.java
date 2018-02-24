@@ -4,6 +4,8 @@ class A {
   Sttring b ="abc";
   public void f1(){
   }
+  public void f2(){
+  }
 
   public A(int num)
   {
@@ -17,10 +19,18 @@ class A {
 
 }
 
-class B{
+class B extends A{
 
 }
 
-class C{
+class C extends D{
+
+}
+
+class D{
+  public void f1(){
+  }
+  public void f2(){
+  }
 
 }
