@@ -31,15 +31,29 @@ let verifyHashtbl nameHashtbl key =
   | _ -> Hashtbl.mem nameHashtbl key
   | "Object" -> true
 
+let stringOf_argType a =
+  (if a.final then "final " else "")^
+    (Type.stringOf a.ptype)^
+      (if a.vararg then "..." else "")
+
 let printMethodTable methodTable =
 	print_endline("list of the methods ：");
 	Hashtbl.iter (fun key value ->print_string("\t");print_string(key ^ " : ");print_endline(value.mname)) methodTable
 
 
+let printConstructor c=
+	print_string (c.cname^"(");
+	print_string(ListII.concat_map "," stringOf_arg c.cargstype);
+	print_endline(")")
+
+
+
 let printClassDescriptor globalClassDescriptor  =
 	match globalClassDescriptor with
 	| ClassDescriptor cd ->
-			Hashtbl.iter (fun key value ->print_string("\t\t");print_string(key ^ " : " );print_endline(value)) cd.methods
+			Hashtbl.iter (fun key value ->print_string("\t\t");print_endline("functions:");print_string("\t\t\t");print_string(key ^ " : " );print_endline(value)) cd.methods;
+			print_string("\t\t");print_endline("attributs:");List.iter (print_attribute("\t\t\t")) cd.attributes;
+			print_string("\t\t");print_endline("constructors:");Hashtbl.iter (fun key value ->print_string("\t\t\t");print_string(key ^ " : " );printConstructor value) cd.constructors
 
 let printClassTable classTable =
 	print_endline("list of the classes ：");
@@ -82,7 +96,7 @@ let addMethodsToClassDesciptor className methods cmethod =
 	end
 
 let addConstructorsToClassDesciptor constructorsClass constructor =
-	Hashtbl.add constructorsClass (constructor.cname) constructor
+	Hashtbl.add constructorsClass (ListII.concat_map "," stringOf_argType constructor.cargstype) constructor
 
 let addToClassTable classTable className c =
   let methodsClass = Hashtbl.create 20 in
