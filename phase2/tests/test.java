@@ -6,7 +6,11 @@ class I {
 	String c = "yes";
 	int i = 5;
 	int j = i;
-	private String func1 (int a, int b) {
+	public I(int e) {
+		e += 1;
+	}
+	I my = new I(i);
+	private String func1 (int a) {
 		int b = 1;
 		return "YES";
 	}
