@@ -9,4 +9,9 @@ exception MethodAlreadyExists of string
 exception ConstructorAlreadyExists of string
 exception WrongTypesAssignOperation of Type.t option * Type.t option
 exception WrongTypesOperation of Type.t option * Type.t option
-exception UnknowVariable of string
+exception UnknownVariable of string
+exception UnknownClass of string
+exception WrongInvokedArgumentsLength of string
+exception ArgumentTypeNotExiste
+exception ArgumentTypeNotMatch
+exception TEST
