@@ -211,7 +211,14 @@ let rec verify_statement current_env envs statement =
       | Void -> ()
       | _ -> raise(IncompatibleTypes("This methode must return a result of type "^(Type.stringOf current_env.returntype)))
     )
-  | Return Some(e) -> () (*TODO*)
+  (* check when the return clause is not none, ex: return x;*)
+  | Return Some(e) -> (verify_expression envs current_env e;
+    if current_env.env_type <> "methode" then raise(IncompatibleTypes("unexpected return value"));
+    match current_env.returntype, e.etype with
+      | declared_t, Some(actual_t) -> if declared_t <> actual_t
+        then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to "^(stringOf declared_t)))
+      | _, None -> raise(InvalidMethodDeclaration("return type required"))
+    )
   | Throw e -> () (*TODO*)
   | While(e,s) -> () (*TODO*)
   | If(e,s,None) -> () (*TODO*)
@@ -238,7 +245,7 @@ let verify_methods envs current_class meths =
     returntype = meths.mreturntype;
     variables = Hashtbl.create 17;
     this_class = current_class;
-    env_type = "method"} in
+    env_type = "methode"} in
   List.iter (verify_declared_args current_env) meths.margstype;
   List.iter (verify_statement current_env envs) meths.mbody
 

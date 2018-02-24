@@ -127,11 +127,11 @@ If you are a team member of the project, please follow the [Working Standard](./
         - [x] non-static Methods
 ---
 
-### Second part: The typer and the execution support
+### Second part: The Type-checking and the Execution
 
 *Deadline 25/02/2018*
 
-#### Typer
+#### Type-checking
 
 - [x] The construction of the class definition environment. This environment contains the type of methods for each class. This phase ignores the attributes (which are not visible outside the class) and the method bodies.
     - [x] create a class definition environment type called `class_env`, it contains 4 fields as follows
@@ -164,6 +164,27 @@ If you are a team member of the project, please follow the [Working Standard](./
                 - [] check try statement
         - [x] `verify_constructors` that checks the type of constructors
         - [x] `verify_attributes` that checks the type of attributes
+
+##### Errors that can be found during Type-checking
+
+- ArgumentAlreadyExists
+- AttributeAlreadyExists
+- ClassAlreadyExists
+- ConstructorAlreadyExists
+- DuplicateLocalVariable
+- IncompatibleTypes
+    - when constructor try to return a variable ->  IncompatibleTypes("unexpected return value")
+    - when methode return does not contain variable -> IncompatibleTypes("missing return value")
+    - when methode return type does not corresponds with the declared one -> IncompatibleTypes("missing return value")
+- MethodAlreadyExists
+- UnknowVariable
+- WrongTypesAssignOperation
+- WrongTypesOperation
+
+##### Errors that can not yet be found during Type-checking
+
+- errors related to overloading
+- errors related to overriding
 
 #### Execution
 

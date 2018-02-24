@@ -14,4 +14,5 @@ exception UnknownClass of string
 exception WrongInvokedArgumentsLength of string
 exception ArgumentTypeNotExiste
 exception ArgumentTypeNotMatch
+exception InvalidMethodDeclaration of string
 exception TEST
