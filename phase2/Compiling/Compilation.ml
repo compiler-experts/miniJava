@@ -5,6 +5,7 @@ open Hashtbl
 
 type classDescriptor =
 {
+	pname : string;
 	name : string;
 	methods : (string, string) Hashtbl.t;
 	constructors : (string, astconst) Hashtbl.t;
@@ -53,7 +54,8 @@ let printClassDescriptor globalClassDescriptor  =
 	| ClassDescriptor cd ->
 			Hashtbl.iter (fun key value ->print_string("\t\t");print_endline("functions:");print_string("\t\t\t");print_string(key ^ " : " );print_endline(value)) cd.methods;
 			print_string("\t\t");print_endline("attributs:");List.iter (print_attribute("\t\t\t")) cd.attributes;
-			print_string("\t\t");print_endline("constructors:");Hashtbl.iter (fun key value ->print_string("\t\t\t");print_string(key ^ " : " );printConstructor value) cd.constructors
+			print_string("\t\t");print_endline("constructors:");Hashtbl.iter (fun key value ->print_string("\t\t\t");print_string(key ^ " : " );printConstructor value) cd.constructors;
+			print_string("\t\t");print_endline("parent: ");print_string("\t\t\t");print_endline(cd.pname)
 
 let printClassTable classTable =
 	print_endline("list of the classes ：");
@@ -98,12 +100,15 @@ let addMethodsToClassDesciptor className methods cmethod =
 let addConstructorsToClassDesciptor constructorsClass constructor =
 	Hashtbl.add constructorsClass (ListII.concat_map "," stringOf_argType constructor.cargstype) constructor
 
+
+
+
 let addToClassTable classTable className c =
   let methodsClass = Hashtbl.create 20 in
 	let constructorsClass = Hashtbl.create 20 in
   List.iter (addMethodsToClassDesciptor className methodsClass) c.cmethods;
 	List.iter (addConstructorsToClassDesciptor constructorsClass) c.cconsts;
-	Hashtbl.add classTable className (ClassDescriptor({name=className;methods=methodsClass;attributes=c.cattributes;constructors=constructorsClass}))
+	Hashtbl.add classTable className (ClassDescriptor({pname=c.cparent.tid ;name=className;methods=methodsClass;attributes=c.cattributes;constructors=constructorsClass}))
 
 
 
@@ -117,6 +122,7 @@ let compileClass methodTable classTable ast asttype =
 									addToClassTable classTable asttype.id c;
                   addToMethodTable methodTable asttype.id c
 								end
+
 
   | Inter -> ()
 
