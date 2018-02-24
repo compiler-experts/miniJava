@@ -4,7 +4,7 @@ class I {
 	boolean a2 = false;
 	String c = "yes";
 	int i = 5;
-    int j = i;
+	int j = i;
     // Return None for constructor -> ok
 	public I(boolean a, float b) {
 		this.a = a;
@@ -32,4 +32,24 @@ class I {
 	// private I func2 (int a, int b) {
 	// 	return;
 	// }
+	private void testIf(int i){
+		int j = 0;
+		// test if
+		if (i == 1) {
+			int x =0;
+			j = 5;
+		}
+		// test if else
+		if (i == 1) {
+			int x = 0;
+			j = 4;
+		} else {
+			int x = 1;
+			j = 5;
+		}
+		// if conditon must be boolean
+		// if (i) {
+		// 	j = 4;
+		// }
+	}
 }
