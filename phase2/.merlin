@@ -1,4 +1,4 @@
-PKG ANSITerminal 
+PKG ANSITerminal
 S ./Main
 S ./Parsing
 S ./Typing

@@ -1,4 +1,4 @@
-<Utils> or <Parsing> or <Typing> or <Main>: include
+<Utils> or <Parsing> or <Typing> or <Compiling> or <Main>  : include
 true: use_menhir
 true: warn_a
 true: package(ANSITerminal)
