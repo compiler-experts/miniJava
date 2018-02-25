@@ -80,9 +80,14 @@ let verify_name s env current_env =
   if (Hashtbl.mem current_env.variables s) <> true then
     begin
       (* second find in global env *)
-      if (Hashtbl.mem (Hashtbl.find env current_env.this_class).attributes s) <> true 
-      then raise(UnknownVariable(s))
-      else Some(Hashtbl.find (Hashtbl.find env current_env.this_class).attributes s)
+      if (Hashtbl.mem (Hashtbl.find env current_env.this_class).attributes s) = true 
+      then Some(Hashtbl.find (Hashtbl.find env current_env.this_class).attributes s)
+      else 
+        begin
+          if (Hashtbl.mem env s) = true then
+            Some(Ref({ tpath = []; tid = s }))
+          else raise(UnknownVariable(s))
+        end
     end
   else Some(Hashtbl.find current_env.variables s)
 
@@ -169,10 +174,25 @@ let rec verify_expression env current_env e =
         e.etype <- verify_call_expr m al env current_env.this_class
       | Some c ->
         List.iter (verify_expression env current_env) al;
-        let class_name = string_of_expression(c) in
-        e.etype <- verify_call_expr m al env class_name
+        verify_expression env current_env c;
+        (match c.etype with
+          | Some t ->
+            let class_name = stringOf t in
+            e.etype <- verify_call_expr m al env class_name
+          | None -> ())
     )
-  | Attr (r,a) -> () (*TODO*)
+  | Attr (r,a) ->
+    (* we consider only the case when r is the name of the class and r has no type for the moment *)
+    verify_expression env current_env r;
+    (match r.etype with
+      | Some t -> 
+        let class_name = stringOf t in
+        let attrs_table = (Hashtbl.find env class_name).attributes in
+        if (Hashtbl.mem attrs_table a) <> true then
+          raise(UnknownAttribute(a, class_name))
+        else 
+          e.etype <- Some(Hashtbl.find attrs_table a)
+      | None -> ())
   | If (e1, e2, e3) -> () (*TODO*)
   | Val v ->
       e.etype <- verify_value v
