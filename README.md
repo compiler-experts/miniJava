@@ -141,28 +141,33 @@ If you are a team member of the project, please review the [Guidelines for Contr
         - parent: a class reference type that refers to its class
     - [x] create a `Hashtbl` that maps from class
 - [x] The second phase is concerned with verifying that the inside of classes is correct (mainly the body of methods). She will also make sure of the correction of the higher level expression.
-    - [x] create 3 verification method that verifies the following aspects of the program
+    - [x] create 3 verification methods that verify the following aspects of the program
         - [x] `verify_methods` that checks the type of methods
-            - [x] create a local definition environment type called `current_env` it contains 3 fields as follows
+            - [x] create a local definition environment type called `current_env` that contains 3 fields as follows
                 - returntype: the declared return type of the method
                 - variables: a `Hashtbl` that maps from local variable name to local variable declared type
                 - this_class: the id of the class
                 - env_type: a string that identifies the type of the local definition environment, it could be `constructor`, `method` or `attribute`, in this case, the `env_type` is `method`
-            - [x] write a verification method (`verify_declared_args`) that checks the declared type of variables in the method arguments
+            - [x] write a verification method (`verify_declared_args`) that checks the declared type of variables in the method argument list
                 - [x] check if there exists Duplicate Local Variable
             - [x] write a verification method (`verify_statement`) that checks the body of the method
-                - [x] check declared variables
+                - [x] check variable declaration statement
                 - [x] check block of statement
                 - [x] check expression
                 - [x] check return statement when it's none, ex: `return;`
                 - [x] check return statement when it's not none, ex: `return x;`
                 - [x] check throw statement
+                    -  it does check if exception type or a supertype of that exception type is mentioned in a throws clause in the declaration of the method, it should be checked in compiling
                 - [x] check while statement
-                - [x] check if statement when it doesn't have `else`
-                - [x] check if statement when it has `else`
+                - [x] check if without else statement
+                - [x] check if with else statement
                 - [x] check for statement
                 - [x] check try statement
         - [x] `verify_constructors` that checks the type of constructors
+            - same as verify_methods, except for the following minor difference
+            - `returntype` in the local definition environment `current_env` is a reference to the class it belongs to
+            - `env_type` in the local definition environment `current_env` is `constructor`
+            - check return statement in `verify_statement` is slightly different since constructors can have `reuturn;` but not something like `return x;`
         - [x] `verify_attributes` that checks the type of attributes
 
 ##### Errors that can be found during Type-checking
@@ -212,7 +217,8 @@ If you are a team member of the project, please review the [Guidelines for Contr
 
 - errors related to overloading
 - errors related to overriding
-
+- errors related to generic types
+- errors related to `this` keyword
 
 #### Execution
 
@@ -256,5 +262,10 @@ SameFunctionConstructorsDefined : raised when constructors of class have the sam
 ## Problems
 
 ### Problems of Type
+
+- not support overriding
+- not support overloading
+- not support generic types
+- not support typing related to `this` keyword
 
 ### Problems of Execution
