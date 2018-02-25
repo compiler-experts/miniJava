@@ -12,9 +12,14 @@ class I {
 	I my = new I(i);
 	String mystring1 = I.func1(j);
 	String mystring2 = func1(i);
+	boolean f = !a;
+	int g = ~5;
+	float h = (-8.5f);
 	private String func1 (int a) {
 		int b = 1;
 		b += (5+4);
+		++b;
+		b--;
 		return "YES";
 	}
 

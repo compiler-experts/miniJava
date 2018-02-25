@@ -185,8 +185,31 @@ let rec verify_expression env current_env e =
     verify_expression env current_env e2;
     verify_assignop_type e1.etype e2.etype;
     e.etype <- e1.etype
-  | Post (e,op) -> () (*TODO*)
-  | Pre (op,e) -> () (*TODO*)
+  | Post (e1,op) ->
+      verify_expression env current_env e1;
+      (match op with
+       | Incr  ->
+          if (e1.etype <> Some(Primitive(Int)) && e1.etype <> Some(Primitive(Float))) then
+            raise(WrongTypePostfixOperation(string_of_expression(e1)^"++"))
+       | Decr ->
+          if (e1.etype <> Some(Primitive(Int)) && e1.etype <> Some(Primitive(Float))) then
+            raise(WrongTypePostfixOperation(string_of_expression(e1)^"--"))
+      );
+      e.etype <- e1.etype;
+  | Pre (op,e1) -> 
+      verify_expression env current_env e1;
+      (match op with
+        | Op_not -> 
+          if e1.etype <> Some(Primitive(Boolean)) then
+            raise(WrongTypePrefixOperation(string_of_prefix_op(op), string_of_expression(e1)))
+        | Op_bnot ->
+          if e1.etype <> Some(Primitive(Int)) then
+            raise(WrongTypePrefixOperation(string_of_prefix_op(op), string_of_expression(e1)))
+        | Op_neg | Op_incr | Op_decr | Op_plus ->
+          if (e1.etype <> Some(Primitive(Int)) && e1.etype <> Some(Primitive(Float))) then
+            raise(WrongTypePrefixOperation(string_of_prefix_op(op), string_of_expression(e1)))
+      );
+      e.etype <- e1.etype;
   | Op (e1,op,e2) -> 
       verify_expression env current_env e1;
       verify_expression env current_env e2;

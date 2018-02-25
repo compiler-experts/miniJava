@@ -17,3 +17,5 @@ exception InvalidMethodDeclaration of string
 exception ArgumentTypeNotMatch of string
 exception UnknownMethod of string
 exception UnknowActualType of string
+exception WrongTypePrefixOperation of string * string
+exception WrongTypePostfixOperation of string
