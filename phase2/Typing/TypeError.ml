@@ -10,7 +10,7 @@ exception ConstructorAlreadyExists of string
 exception DuplicateLocalVariable of string
 exception IncompatibleTypes of string
 exception InvalidMethodDeclaration of string
-exception InvalidTypeCondOperation of Type.t * Type.t
+exception InvalidTypeCondOperation of string * string
 exception MethodAlreadyExists of string
 exception UnknownAttribute of string * string
 exception UnknownVariable of string
@@ -20,6 +20,6 @@ exception UnknowActualType of string
 exception WrongTypePrefixOperation of string * string
 exception WrongTypePostfixOperation of string
 exception WrongInvokedArgumentsLength of string
-exception WrongTypesAssignOperation of Type.t option * Type.t option
-exception WrongTypeCondOperation of Type.t option
-exception WrongTypesOperation of Type.t option * Type.t option
+exception WrongTypesAssignOperation of string * string * string
+exception WrongTypeCondOperation of string
+exception WrongTypesOperation of string * string * string
