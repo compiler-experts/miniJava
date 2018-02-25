@@ -215,7 +215,7 @@ let rec verify_expression env current_env e =
           if (e1.etype <> Some(Primitive(Int)) && e1.etype <> Some(Primitive(Float))) then
             raise(WrongTypePostfixOperation(string_of_expression(e1)^"--"))
       );
-      e.etype <- e1.etype;
+      e.etype <- e1.etype
   | Pre (op,e1) -> 
       verify_expression env current_env e1;
       (match op with
@@ -238,11 +238,17 @@ let rec verify_expression env current_env e =
       | Op_cor | Op_cand | Op_eq | Op_ne | Op_gt | Op_lt | Op_ge | Op_le -> e.etype <- Some(Primitive(Boolean))
       | Op_or | Op_and | Op_xor | Op_shl | Op_shr | Op_shrr | Op_add | Op_sub | Op_mul | Op_div | Op_mod -> e.etype <- e1.etype)
   | CondOp (e1,e2,e3) -> () (*TODO*)
-  | Cast (t,e) -> () (*TODO*)
-  | Type t -> () (*TODO*)
-  | ClassOf t-> () (*TODO*)
-  | Instanceof (e1, t)-> () (*TODO*)
-  | VoidClass -> () (*TODO*)
+  | Cast (t,e1) -> 
+      verify_expression env current_env e1;
+      e.etype <- Some(t)
+  | Type t -> 
+      e.etype <- Some(t)
+  | ClassOf t -> 
+      e.etype <- Some(t)
+  | Instanceof (e1, t) -> 
+      verify_expression env current_env e1;
+      e.etype <- Some(Primitive(Boolean))
+  | VoidClass -> () 
 
 (* add a local variable to the current environment *)
 let add_local_variable current_env id t =

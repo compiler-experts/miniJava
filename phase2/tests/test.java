@@ -16,6 +16,9 @@ class I {
 	int g = ~5;
 	float h = (-8.5f);
 	boolean boo = I.a;
+	int sr = 5;
+	long l = (long) sr;
+	boolean test = my instanceof I;
 	private String func1 (int a) {
 		int b = 1;
 		b += (5+4);
