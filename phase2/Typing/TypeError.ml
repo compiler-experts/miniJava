@@ -20,6 +20,7 @@ exception UnknownVariable of string
 exception WrongTypePrefixOperation of string * string
 exception WrongTypePostfixOperation of string
 exception WrongInvokedArgumentsLength of string
+exception WrongTypeArrayInitList of string * string
 exception WrongTypesAssignOperation of string * string * string
 exception WrongTypeCondOperation of string
 exception WrongTypesOperation of string * string * string

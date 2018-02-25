@@ -141,6 +141,16 @@ let verify_call_expr meth_name args env class_name =
         | WrongInvokedArgumentsLength s -> raise(WrongInvokedArgumentsLength(s))
     end
 
+let rec verify_array_init_list el = 
+    match el with
+    | [] -> ()
+    | h::t -> 
+      (match t with
+        | [] -> ()
+        | h1::t1 -> 
+          if h.etype <> h1.etype then 
+          raise(WrongTypeArrayInitList(stringOfOpt h.etype, stringOfOpt h1.etype)));
+    verify_array_init_list t
 
 
 (* check the type of the expressions *)
@@ -206,7 +216,13 @@ let rec verify_expression env current_env e =
       e.etype <- verify_value v
   | Name s -> 
       e.etype <- verify_name s env current_env
-  | ArrayInit el -> () (*TODO*)
+  | ArrayInit el -> 
+    List.iter (verify_expression env current_env) el;
+    (* check the type of each element which is in an array list is same *)
+    verify_array_init_list el;
+    e.etype <- 
+      (match (List.hd el).etype with
+      | Some(t) -> Some(Array(t, 1)))
   | Array (e,el) -> () (*TODO*)
   | AssignExp (e1,op,e2) ->
     verify_expression env current_env e1;

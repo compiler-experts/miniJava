@@ -21,6 +21,7 @@ class I {
 	boolean test = my instanceof I;
 	int condop = (1 == 2) ? 1 : 5;
 	int[] arr = new int[5];
+	int[] arr2 = {1,2,8.5f};
 	private String func1 (int a) {
 		int b = 1;
 		b += (5+4);
