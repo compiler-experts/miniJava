@@ -91,7 +91,7 @@ let addMethodsToMethodTable className methodTable cmethod =
 		Hashtbl.add methodTable nameMethod cmethod
 	end
 	else begin
-		print_endline("function " ^ cmethod.mname ^ " already in the method table")
+		raise(SameFunctionAlreadyDefined(nameMethod ^  " already defined in method Table "))
 	end
 
 
@@ -111,7 +111,7 @@ let addMethodsToClassDesciptor className methods cmethod =
 		Hashtbl.add methods nameKey nameMethod
 	end
 	else begin
-		print_endline("function " ^ cmethod.mname ^ " already defined")
+		raise(SameFunctionAlreadyDefined(nameKey ^  " already defined in ClassDesciptor " ^ className ))
 	end
 
 let addConstructorsToClassDesciptor constructorsClass constructor =
@@ -180,6 +180,7 @@ let rec compileClass methodTable classTable ast asttype =
 														addToClassTable classTable asttype.id c;
 														addToMethodTable methodTable asttype.id c;
 													with
+														| SameFunctionAlreadyDefined str -> raise(SameFunctionAlreadyDefined(str))
 														| _ -> raise(ParentClassNotDefined(c.cparent.tid))
 											end
 								end
