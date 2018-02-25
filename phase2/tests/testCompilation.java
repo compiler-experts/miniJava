@@ -1,3 +1,8 @@
+class B extends A{
+  public void f1(){
+  }
+}
+
 class A {
 
   int a = 5;
@@ -15,22 +20,6 @@ class A {
   public A(int num,String name)
   {
     a = num;
-  }
-
-}
-
-class B extends A{
-
-}
-
-class C extends D{
-
-}
-
-class D{
-  public void f1(){
-  }
-  public void f2(){
   }
 
 }

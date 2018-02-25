@@ -15,6 +15,7 @@ type classDescriptor =
 
 type globalClassDescriptor =
   | ClassDescriptor of classDescriptor
+	| ObjectClass of classDescriptor
 
 type globalData =
 {
@@ -22,7 +23,9 @@ type globalData =
   classTable : (string, globalClassDescriptor) Hashtbl.t;
 }
 
-
+let addPredifinedClassesToClassTable classTable =
+  let oc = { name = "Object"; pname="";pattributes=[];methods = Hashtbl.create 10; constructors = Hashtbl.create 20; attributes = [] } in
+  Hashtbl.add classTable "Object" (ObjectClass(oc))
 
 (*verify if a key exists in the table
 exits: return true
@@ -53,6 +56,13 @@ let printConstructor c=
 let printClassDescriptor globalClassDescriptor  =
 	match globalClassDescriptor with
 	| ClassDescriptor cd ->
+			print_string("\t\t");print_endline("functions:");Hashtbl.iter (fun key value ->print_string("\t\t\t");print_string(key ^ " : " );print_endline(value)) cd.methods;
+			print_string("\t\t");print_endline("attributs:");List.iter (print_attribute("\t\t\t")) cd.attributes;
+			print_string("\t\t");print_endline("pattributs:");List.iter (print_attribute("\t\t\t")) cd.pattributes;
+			print_string("\t\t");print_endline("constructors:");Hashtbl.iter (fun key value ->print_string("\t\t\t");print_string(key ^ " : " );printConstructor value) cd.constructors;
+			print_string("\t\t");print_endline("parent: ");print_string("\t\t\t");print_endline(cd.pname);
+			print_endline("-----------------------------------------------------------------------------------------")
+	| ObjectClass cd ->
 			print_string("\t\t");print_endline("functions:");Hashtbl.iter (fun key value ->print_string("\t\t\t");print_string(key ^ " : " );print_endline(value)) cd.methods;
 			print_string("\t\t");print_endline("attributs:");List.iter (print_attribute("\t\t\t")) cd.attributes;
 			print_string("\t\t");print_endline("pattributs:");List.iter (print_attribute("\t\t\t")) cd.pattributes;
@@ -110,6 +120,7 @@ let addMethodsToClassDesciptorFromParent classTable methodsClass c =
 		let parentClassDescriptor = Hashtbl.find classTable c.cparent.tid in
 		match parentClassDescriptor with
 		| ClassDescriptor cd -> Hashtbl.iter (fun key value -> if(Hashtbl.mem methodsClass key) <> true then Hashtbl.add methodsClass key value) cd.methods
+		| ObjectClass oc -> ()
 	end
 
 
@@ -120,6 +131,7 @@ let getAttributesFromParent classTable c =
 		let parentClassDescriptor = Hashtbl.find classTable c.cparent.tid in
 		match parentClassDescriptor with
 		| ClassDescriptor cd -> cd.attributes
+		| ObjectClass oc -> []
 	end
 	else
 		begin
@@ -143,12 +155,25 @@ let addToClassTable classTable className c =
 (*asttype ={  mutable modifiers : modifier list; id : string; info : type_info;}
 ulity: add class and methods in the Hashtbl
 *)
-let compileClass methodTable classTable ast asttype =
+let rec findParentClass cname typelist = match typelist with
+  | head::liste -> if head.id = cname then head else findParentClass cname liste
+
+let rec compileClass methodTable classTable ast asttype =
   match asttype.info with
   | Class c -> if(verifyHashtbl classTable asttype.id) = false
-                then begin
-									addToClassTable classTable asttype.id c;
-                  addToMethodTable methodTable asttype.id c
+               then begin
+										if(verifyHashtbl classTable c.cparent.tid) = true
+										then begin
+											addToClassTable classTable asttype.id c;
+		                  addToMethodTable methodTable asttype.id c
+										end
+										else
+										  begin
+												let parenttype = findParentClass c.cparent.tid ast.type_list in
+												compileClass methodTable classTable ast parenttype;
+												addToClassTable classTable asttype.id c;
+												addToMethodTable methodTable asttype.id c
+											end
 								end
 
 
@@ -160,6 +185,7 @@ let compileClass methodTable classTable ast asttype =
 *)
 let compileAST ast =
   let programData = { methodTable = Hashtbl.create 20; classTable = Hashtbl.create 20 } in
+	addPredifinedClassesToClassTable programData.classTable;
   List.iter (compileClass programData.methodTable programData.classTable ast) ast.type_list;
 	printClassTable programData.classTable;
 	printMethodTable programData.methodTable;
