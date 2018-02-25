@@ -27,6 +27,7 @@ The specification of the project can be found [here](https://svn.telecom-bretagn
 - [Problems](#problems)
   * [Problems of Type](#problems-of-type)
   * [Problems of Execution](#problems-of-execution)
+- [Contributors](#contributors)
 
 ---
 
@@ -336,3 +337,14 @@ SameFunctionConstructorsDefined : raised when constructors of class have the sam
 - not support typing related to `this` keyword
 
 ### Problems of Execution
+
+## Contributors
+
+- First part: Lexical and syntactic analyzers
+    - Expression: [Shuwei ZHANG](https://github.com/zhangshuwei) & [Jinhai ZHOU](https://github.com/JinhaiZ)
+    - Classes: [Xiaofeng ZHOU](https://github.com/XiaofengZHOU) & Keyu PU
+- Second part: The Type-checking and the Execution
+    - Type-checking: [Shuwei ZHANG](https://github.com/zhangshuwei) & [Jinhai ZHOU]
+    - Execution: [Xiaofeng ZHOU](https://github.com/XiaofengZHOU) & Keyu PU
+
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
