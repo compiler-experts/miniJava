@@ -56,7 +56,7 @@ let verify_invoke_args args const_info func_name =
       List.iter2 compare_args args const_info
     end
 
-(* verify declared types of variables in constructor arguments or methodes arguments *)
+(* verify declared types of variables in constructor arguments or methods arguments *)
 let verify_declared_args current_env arguments =
   if (Hashtbl.mem current_env.variables arguments.pident) <> true
   then (
@@ -266,12 +266,12 @@ let add_local_variable current_env id t =
     - if actual type matches declared type: 
       add variable id and its type to the current_env
     - if e.type is None or type donesn't match:
-      raise UnknowActualType exception and IncompatibleTypes
+      raise UnknownActualType exception and IncompatibleTypes
       exception respectively *)
 let verify_actual_type_with_declared_type e t id current_env =
   let s = string_of_expression_desc e.edesc in
   match e.etype with
-    | None -> raise(UnknowActualType(" "^s^" don't have type information"));
+    | None -> raise(UnknownActualType(" "^s^" don't have type information"));
     (* check int i = 2, int j = i *)
     | Some actual_t -> (
       if actual_t <> t (*actual type not equals to declared type*)
@@ -284,11 +284,12 @@ let verify_actual_type_with_declared_type e t id current_env =
     - err_msg if of string: the customized exception message
   Function:
     - if e.type is None or type donesn't match:
-      raise UnknowActualType exception and IncompatibleTypes
+      raise UnknownActualType exception and IncompatibleTypes
       exception respectively *)
 let verify_actual_type_with_boolean e err_msg =
+  let s = string_of_expression_desc e.edesc in
   match e.etype with
-      | None -> raise(UnknowActualType(err_msg))
+      | None -> raise(UnknownActualType(s^": "^err_msg))
       | Some actual_t -> if actual_t <> Primitive(Boolean)
         then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to boolean"))
 
@@ -318,11 +319,11 @@ let rec verify_statement current_env envs statement =
     match current_env.returntype with
       | Ref(ref)-> if current_env.env_type <> "constructor" then raise(IncompatibleTypes("missing return value"))
       | Void -> ()
-      | _ -> raise(IncompatibleTypes("This methode must return a result of type "^(Type.stringOf current_env.returntype)))
+      | _ -> raise(IncompatibleTypes("This method must return a result of type "^(Type.stringOf current_env.returntype)))
     )
   (* check when the return clause is not none, ex: return x;*)
   | Return Some(e) -> (verify_expression envs current_env e;
-    if current_env.env_type <> "methode" then raise(IncompatibleTypes("unexpected return value"));
+    if current_env.env_type <> "method" then raise(IncompatibleTypes("unexpected return value"));
     match current_env.returntype, e.etype with
       | declared_t, Some(actual_t) -> if declared_t <> actual_t
         then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to "^(stringOf declared_t)))
@@ -381,7 +382,7 @@ let verify_methods envs current_class meths =
     returntype = meths.mreturntype;
     variables = Hashtbl.create 17;
     this_class = current_class;
-    env_type = "methode"} in
+    env_type = "method"} in
   List.iter (verify_declared_args current_env) meths.margstype;
   List.iter (verify_statement current_env envs) meths.mbody
 
