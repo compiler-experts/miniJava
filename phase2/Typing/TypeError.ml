@@ -13,10 +13,10 @@ exception InvalidMethodDeclaration of string
 exception InvalidTypeCondOperation of Type.t * Type.t
 exception MethodAlreadyExists of string
 exception UnknownAttribute of string * string
-exception UnknownVariable of string
+exception UnknownActualType of string
 exception UnknownClass of string
 exception UnknownMethod of string
-exception UnknowActualType of string
+exception UnknownVariable of string
 exception WrongTypePrefixOperation of string * string
 exception WrongTypePostfixOperation of string
 exception WrongInvokedArgumentsLength of string

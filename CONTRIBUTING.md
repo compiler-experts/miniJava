@@ -1,4 +1,4 @@
-# The to contribute to the minijava Project
+# Guidelines for Contributing
 
 ## How to collaborate
 
