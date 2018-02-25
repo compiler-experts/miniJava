@@ -6,6 +6,7 @@ open Hashtbl
 type classDescriptor =
 {
 	pname : string;
+	pattributes : astattribute list;
 	name : string;
 	methods : (string, string) Hashtbl.t;
 	constructors : (string, astconst) Hashtbl.t;
@@ -54,6 +55,7 @@ let printClassDescriptor globalClassDescriptor  =
 	| ClassDescriptor cd ->
 			print_string("\t\t");print_endline("functions:");Hashtbl.iter (fun key value ->print_string("\t\t\t");print_string(key ^ " : " );print_endline(value)) cd.methods;
 			print_string("\t\t");print_endline("attributs:");List.iter (print_attribute("\t\t\t")) cd.attributes;
+			print_string("\t\t");print_endline("pattributs:");List.iter (print_attribute("\t\t\t")) cd.pattributes;
 			print_string("\t\t");print_endline("constructors:");Hashtbl.iter (fun key value ->print_string("\t\t\t");print_string(key ^ " : " );printConstructor value) cd.constructors;
 			print_string("\t\t");print_endline("parent: ");print_string("\t\t\t");print_endline(cd.pname);
 			print_endline("-----------------------------------------------------------------------------------------")
@@ -112,14 +114,29 @@ let addMethodsToClassDesciptorFromParent classTable methodsClass c =
 
 
 
+let getAttributesFromParent classTable c =
+	if (Hashtbl.mem classTable c.cparent.tid) = true
+	then begin
+		let parentClassDescriptor = Hashtbl.find classTable c.cparent.tid in
+		match parentClassDescriptor with
+		| ClassDescriptor cd -> cd.attributes
+	end
+	else
+		begin
+		match c with
+		| _ -> []
+		end
+
+
 let addToClassTable classTable className c =
   let methodsClass = Hashtbl.create 20 in
 	let constructorsClass = Hashtbl.create 20 in
   List.iter (addMethodsToClassDesciptor className methodsClass) c.cmethods;
 	List.iter (addConstructorsToClassDesciptor constructorsClass) c.cconsts;
 	addMethodsToClassDesciptorFromParent classTable methodsClass c;
-
-	Hashtbl.add classTable className (ClassDescriptor({pname=c.cparent.tid ;name=className;methods=methodsClass;attributes=c.cattributes;constructors=constructorsClass}))
+	getAttributesFromParent classTable c;
+	let parentAttributes = getAttributesFromParent classTable c in
+	Hashtbl.add classTable className (ClassDescriptor({pname=c.cparent.tid ;pattributes=parentAttributes; name=className;methods=methodsClass;attributes=c.cattributes;constructors=constructorsClass}))
 
 
 
