@@ -237,7 +237,18 @@ let rec verify_expression env current_env e =
       (match op with
       | Op_cor | Op_cand | Op_eq | Op_ne | Op_gt | Op_lt | Op_ge | Op_le -> e.etype <- Some(Primitive(Boolean))
       | Op_or | Op_and | Op_xor | Op_shl | Op_shr | Op_shrr | Op_add | Op_sub | Op_mul | Op_div | Op_mod -> e.etype <- e1.etype)
-  | CondOp (e1,e2,e3) -> () (*TODO*)
+  | CondOp (e1,e2,e3) -> 
+      verify_expression env current_env e1;
+      verify_expression env current_env e2;
+      verify_expression env current_env e3;
+      (* check if e1.etype is boolean and e2.etype equals e3.etype *)
+      if e1.etype <> Some(Primitive(Boolean))
+      then raise(WrongTypeCondOperation(e1.etype))
+      (match e2.etype, e3.etype with
+        | Some(_), None -> ()
+        | None, Some(_) -> ()
+        | Some(t1), Some(t2) -> if t1 <> t2 then raise(InvalidTypeCondOperation(t1, t2)));
+      if e2.etype <> None then e.etype <- e2.etype else e.etype <- e3.etype
   | Cast (t,e1) -> 
       verify_expression env current_env e1;
       e.etype <- Some(t)

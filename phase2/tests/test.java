@@ -19,6 +19,7 @@ class I {
 	int sr = 5;
 	long l = (long) sr;
 	boolean test = my instanceof I;
+	int condop = (1 == 2) ? 1 : 5;
 	private String func1 (int a) {
 		int b = 1;
 		b += (5+4);
