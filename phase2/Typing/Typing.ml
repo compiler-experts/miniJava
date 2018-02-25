@@ -4,7 +4,8 @@ open Type
 
 type func_info = {
   ftype: Type.t;
-  fargs: argument list
+  fargs: argument list;
+  fthrows: Type.ref_type list
 }
 
 type curr_env = {
@@ -348,7 +349,7 @@ let rec verify_statement current_env envs statement =
         then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to "^(stringOf declared_t)))
       | _, None -> raise(InvalidMethodDeclaration("return type required"))
     )
-  | Throw e -> () (*TODO*)
+  | Throw e -> verify_expression envs current_env e
   | While(e,s) -> (verify_expression envs current_env e;
     verify_actual_type_with_boolean e "unknow type in while condition");
     verify_statement current_env envs s
@@ -380,7 +381,19 @@ let rec verify_statement current_env envs statement =
     );
     List.iter (verify_expression envs for_env) el;
     verify_statement for_env envs s;
-  | Try(body,catch,finally) -> () (*TODO*)
+  | Try(body,catch,finally) ->
+    let catch_env = { returntype = current_env.returntype;
+        variables = Hashtbl.copy current_env.variables;
+        this_class = current_env.this_class;
+        env_type = current_env.env_type} in
+      List.iter (verify_statement current_env envs) body;
+      List.iter (fun (a,sl) ->
+        verify_declared_args catch_env a;
+      List.iter (verify_statement catch_env envs) sl) catch;
+      (if finally != [] then
+    begin
+      List.iter (verify_statement current_env envs) finally
+    end)
 
 (* check type for constructors  *)
 let verify_constructors envs current_class consts =
@@ -394,7 +407,8 @@ let verify_constructors envs current_class consts =
     this_class = current_class;
     env_type = "constructor"} in
   List.iter (verify_declared_args current_env) consts.cargstype;
-  List.iter (verify_statement current_env envs) consts.cbody (*TODO: I am constructor*)
+  List.iter (verify_statement current_env envs) consts.cbody
+  (* TODO: List.iter (verify_throws current_env envs) consts.mthrows*)
 
 let verify_methods envs current_class meths =
   let current_env = {
@@ -404,6 +418,7 @@ let verify_methods envs current_class meths =
     env_type = "method"} in
   List.iter (verify_declared_args current_env) meths.margstype;
   List.iter (verify_statement current_env envs) meths.mbody
+  (* TODO: List.iter (verify_throws current_env envs) meths.mthrows*)
 
 (* check the type of the attibutes *)
 let verify_attributes envs current_class attrs = 
@@ -440,7 +455,8 @@ let add_constructors env current_class consts =
     (* print_const "   " consts; *)
     Hashtbl.add consts_table consts.cname
     {ftype = Type.Ref {tpath=[]; tid=current_class}; 
-     fargs = consts.cargstype }
+     fargs = consts.cargstype;
+     fthrows = consts.cthrows }
   )
   else raise(ConstructorAlreadyExists(consts.cname))
 
@@ -452,7 +468,8 @@ let add_methods env current_class meths =
     (* print_method "   " meths; *)
     Hashtbl.add meths_table meths.mname
      {ftype = meths.mreturntype; 
-      fargs = meths.margstype }
+      fargs = meths.margstype;
+      fthrows = meths.mthrows }
   )
   (*TODO: check override and overload*)
   else raise(MethodAlreadyExists(meths.mname)) 
