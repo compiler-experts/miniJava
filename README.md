@@ -155,12 +155,12 @@ If you are a team member of the project, please follow the [Working Standard](./
                 - [x] check block of statement
                 - [x] check expression
                 - [x] check return statement when it's none, ex: `return;`
-                - [] check return statement when it's not none, ex: `return x;`
+                - [x] check return statement when it's not none, ex: `return x;`
                 - [] check throw statement
-                - [] check while statement
-                - [] check if statement when it doesn't have `else`
-                - [] check if statement when it has `else`
-                - [] check for statement
+                - [x] check while statement
+                - [x] check if statement when it doesn't have `else`
+                - [x] check if statement when it has `else`
+                - [x] check for statement
                 - [] check try statement
         - [x] `verify_constructors` that checks the type of constructors
         - [x] `verify_attributes` that checks the type of attributes
@@ -168,16 +168,29 @@ If you are a team member of the project, please follow the [Working Standard](./
 ##### Errors that can be found during Type-checking
 
 - ArgumentAlreadyExists
+- ArgumentTypeNotExiste
+- ArgumentTypeNotMatch
 - AttributeAlreadyExists
 - ClassAlreadyExists
 - ConstructorAlreadyExists
 - DuplicateLocalVariable
 - IncompatibleTypes
-    - when constructor try to return a variable ->  IncompatibleTypes("unexpected return value")
+    - when constructor try to return a variable ->  ("unexpected return value")
     - when methode return does not contain variable -> IncompatibleTypes("missing return value")
     - when methode return type does not corresponds with the declared one -> IncompatibleTypes("missing return value")
+    - when condition in if statement is not boolean ->  IncompatibleTypes("[actual type] cannot be converted to boolean")
+    - when condition in if else statement is not boolean ->  IncompatibleTypes("[actual type] cannot be converted to boolean")
+    - when loop condition in for statement is not boolean ->  IncompatibleTypes("[actual type] cannot be converted to boolean")
+    - when loop condition in while statement is not boolean ->  IncompatibleTypes("[actual type] cannot be converted to boolean")
+- InvalidMethodDeclaration
 - MethodAlreadyExists
-- UnknowVariable
+- UnknownVariable
+- UnknownClass
+- UnknownMethod
+- UnknowActualType
+- WrongTypePrefixOperation
+- WrongTypePostfixOperation
+- WrongInvokedArgumentsLength
 - WrongTypesAssignOperation
 - WrongTypesOperation
 

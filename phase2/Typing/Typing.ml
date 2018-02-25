@@ -288,7 +288,7 @@ let verify_actual_type_with_declared_type e t id current_env =
       exception respectively *)
 let verify_actual_type_with_boolean e err_msg =
   match e.etype with
-      | None -> raise(UnknowActualType("unknow type in if else condition"))
+      | None -> raise(UnknowActualType(err_msg))
       | Some actual_t -> if actual_t <> Primitive(Boolean)
         then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to boolean"))
 
@@ -329,7 +329,9 @@ let rec verify_statement current_env envs statement =
       | _, None -> raise(InvalidMethodDeclaration("return type required"))
     )
   | Throw e -> () (*TODO*)
-  | While(e,s) -> () (*TODO*)
+  | While(e,s) -> (verify_expression envs current_env e;
+    verify_actual_type_with_boolean e "unknow type in while condition");
+    verify_statement current_env envs s
   | If(e,s,None) -> (verify_expression envs current_env e; 
     verify_statement current_env envs s;
     verify_actual_type_with_boolean e "unknow type in if condition")

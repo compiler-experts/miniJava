@@ -71,4 +71,10 @@ class I {
 	// 		i++;
 	// 	}
 	// }
+
+	private void testWhile(){
+		while(i < 10) {
+			i++;
+		}
+	}
 }
