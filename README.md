@@ -4,6 +4,32 @@ A compilation project for Thrid year students of IMT Atlantique (the former Tele
 
 The specification of the project can be found [here](https://svn.telecom-bretagne.eu/repository/ens-eleves/3a/f2b/304/minijava.pdf) (Authorization Required)
 
+## Table of Content
+
+- [How to clone the project](#how-to-clone-the-project)
+- [The project structure](#the-project-structure)
+- [How to build the compiler](#how-to-build-the-compiler)
+- [How to execute the compiler](#how-to-execute-the-compiler)
+- [How to test the Compiler](#how-to-test-the-compiler)
+- [How to contribute to the Project](#how-to-contribute-to-the-project)
+- [To do list](#to-do-list)
+  * [First part: Lexical and syntactic analyzers](#first-part--lexical-and-syntactic-analyzers)
+    + [Expression Todo List](#expression-todo-list)
+    + [Classes Todo List](#classes-todo-list)
+  * [Second part: The Type-checking and the Execution](#second-part--the-type-checking-and-the-execution)
+    + [Type-checking Todo List](#type-checking-todo-list)
+      - [Notes on errors that can be found during Type-checking](#notes-on-errors-that-can-be-found-during-type-checking)
+      - [Errors that can not yet be found during Type-checking](#errors-that-can-not-yet-be-found-during-type-checking)
+    + [Execution](#execution)
+      - [1. Complilation](#1-complilation)
+      - [Errors that can be found during Complilation](#errors-that-can-be-found-during-complilation)
+      - [2. Execution](#2-execution)
+- [Problems](#problems)
+  * [Problems of Type](#problems-of-type)
+  * [Problems of Execution](#problems-of-execution)
+
+---
+
 ## How to clone the project
 
 Using `git clone`
@@ -79,7 +105,7 @@ If you are a team member of the project, please review the [Guidelines for Contr
 
 *Deadline 15/01/2018*
 
-#### Expression
+#### Expression Todo List
 
 - [x] Line Terminators
 - [ ] Input Elements and Tokens
@@ -107,7 +133,7 @@ If you are a team member of the project, please review the [Guidelines for Contr
     - [x] `== != > < <= >=` Equality and Relational Operators
     - [x] `&& ||` Conditional Operators
 
-#### Classes
+#### Classes Todo List
 
 - [x] Keywords
     - [x] class
@@ -131,7 +157,9 @@ If you are a team member of the project, please review the [Guidelines for Contr
 
 *Deadline 25/02/2018*
 
-#### Type-checking
+#### Type-checking Todo List
+
+*note for the reviewer: [ ] denotes item that needs to do while [x] denotes item that has done*
 
 - [x] The construction of the class definition environment. This environment contains the type of methods for each class. This phase ignores the attributes (which are not visible outside the class) and the method bodies.
     - [x] create a class definition environment type called `class_env`, it contains 4 fields as follows
@@ -140,7 +168,7 @@ If you are a team member of the project, please review the [Guidelines for Contr
         - attributes: a `Hashtbl` that maps from attribute name to attribute type (declared type)
         - parent: a class reference type that refers to its class
     - [x] create a `Hashtbl` that maps from class
-- [x] The second phase is concerned with verifying that the inside of classes is correct (mainly the body of methods). She will also make sure of the correction of the higher level expression.
+- [ ] The second phase is concerned with verifying that the inside of classes is correct (mainly the body of methods). She will also make sure of the correction of the higher level expression.
     - [x] create 3 verification methods that verify the following aspects of the program
         - [x] `verify_methods` that checks the type of methods
             - [x] create a local definition environment type called `current_env` that contains 3 fields as follows
@@ -199,8 +227,11 @@ If you are a team member of the project, please review the [Guidelines for Contr
                 - t1: the type of an attribute
                 - t2: the type of the corresponding expression of an attribute
                 - op: the type of operation, here is `Type.Assign`
+    - [ ] add support to `this` keyword within a class in order to do type checking like `this.a = 5;`
+    - [ ] add location in exception message in order to locate errors
+- [ ] add support to overload methods and constructors
 
-##### Errors that can be found during Type-checking
+##### Notes on errors that can be found during Type-checking
 
 - ArgumentAlreadyExists
     - when found duplicated argument in constructor argument list -> ArgumentAlreadyExists("[pident of argument]")
@@ -254,7 +285,6 @@ If you are a team member of the project, please review the [Guidelines for Contr
 ##### Errors that can not yet be found during Type-checking
 
 - errors related to overloading
-- errors related to overriding
 - errors related to generic types
 - errors related to `this` keyword
 
@@ -301,8 +331,7 @@ SameFunctionConstructorsDefined : raised when constructors of class have the sam
 
 ### Problems of Type
 
-- not support overriding
-- not support overloading
+- not support method overloading
 - not support generic types
 - not support typing related to `this` keyword
 
