@@ -7,8 +7,9 @@ class I {
 	int j = i;
     // Return None for constructor -> ok
 	public I(boolean a, float b) {
-		this.a = a;
-		this.b = b;
+		// TODO: need expression check on attribute of class
+		// this.a = a;
+		// this.b = b;
 		return;
 	}
 	// Return something for constructor -> not ok
@@ -52,4 +53,22 @@ class I {
 		// 	j = 4;
 		// }
 	}
+
+	private void testFor1() {
+		for (;;) {
+			i++;
+		}
+	}
+
+	private void testFor2() {
+		for (int c = 1+1, b = 2+2; c < 6 ; c++) {
+			i++;
+		}
+	}
+	// test bad loop condition
+	// private void testFor3() {
+	// 	for (int c = 1+1, b = 2+2; c; c++) {
+	// 		i++;
+	// 	}
+	// }
 }

@@ -230,6 +230,42 @@ let add_local_variable current_env id t =
   then Hashtbl.add current_env.variables id t
   else raise(DuplicateLocalVariable((Type.stringOf t)^" "^id))
 
+(* check if actual type matches with declared type
+  Parameters: 
+    - e is of expression: the expression contains the actual type
+    - t is of Type.t: the declared type
+    - id if of string: the id for the variable in question
+    - current_env: the local definition environment
+  Function:
+    - if actual type matches declared type: 
+      add variable id and its type to the current_env
+    - if e.type is None or type donesn't match:
+      raise UnknowActualType exception and IncompatibleTypes
+      exception respectively *)
+let verify_actual_type_with_declared_type e t id current_env =
+  let s = string_of_expression_desc e.edesc in
+  match e.etype with
+    | None -> raise(UnknowActualType(" "^s^" don't have type information"));
+    (* check int i = 2, int j = i *)
+    | Some actual_t -> (
+      if actual_t <> t (*actual type not equals to declared type*)
+      then raise(IncompatibleTypes((Type.stringOf actual_t)^" cannnot be converted to "^(Type.stringOf t)^" for "^id))
+      else add_local_variable current_env id t)
+
+(* check if acutal type matches with boolean
+  Parameters:
+    - e is of expression: the expression contains the actual type
+    - err_msg if of string: the customized exception message
+  Function:
+    - if e.type is None or type donesn't match:
+      raise UnknowActualType exception and IncompatibleTypes
+      exception respectively *)
+let verify_actual_type_with_boolean e err_msg =
+  match e.etype with
+      | None -> raise(UnknowActualType("unknow type in if else condition"))
+      | Some actual_t -> if actual_t <> Primitive(Boolean)
+        then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to boolean"))
+
 let rec verify_statement current_env envs statement =
   match statement with
   | VarDecl dl ->
@@ -239,15 +275,7 @@ let rec verify_statement current_env envs statement =
       | None -> add_local_variable current_env id t
       (* check int j = 2; or int j = i;*)
       | Some e -> (verify_expression envs current_env e;
-        let s = string_of_expression_desc e.edesc in
-        match e.etype with
-          | None -> print_string ("["^s^"]"); (*TODO*)
-          (* check int i = 2, int j = i *)
-          | Some actual_t -> (
-            if actual_t <> t (*actual type not equals to declared type*)
-            then raise(IncompatibleTypes((Type.stringOf actual_t)^" cannnot be converted to "^(Type.stringOf t)^" for "^id))
-            else add_local_variable current_env id t
-          )
+        verify_actual_type_with_declared_type e t id current_env
         )
       );
 	  ) dl
@@ -278,18 +306,32 @@ let rec verify_statement current_env envs statement =
   | While(e,s) -> () (*TODO*)
   | If(e,s,None) -> (verify_expression envs current_env e; 
     verify_statement current_env envs s;
-    match e.etype with
-    | None -> raise(UnknowActualType("unknow type in if condition"))
-    | Some actual_t -> if actual_t <> Primitive(Boolean)
-      then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to boolean")))
+    verify_actual_type_with_boolean e "unknow type in if condition")
   | If(e,s1,Some s2) -> (verify_expression envs current_env e;
     verify_statement current_env envs s1;
     verify_statement current_env envs s2;
-    match e.etype with
-      | None -> raise(UnknowActualType("unknow type in if else condition"))
-      | Some actual_t -> if actual_t <> Primitive(Boolean)
-        then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to boolean")))
-  | For(fil,eo,el,s) -> () (*TODO*)
+    verify_actual_type_with_boolean e "unknow type in if else condition")
+  | For(fil,eo,el,s) ->
+    let for_env = { returntype = current_env.returntype;
+        variables = Hashtbl.copy current_env.variables;
+        this_class = current_env.this_class;
+        env_type = current_env.env_type} in
+    List.iter (fun (t,id,eo) ->
+    (match t with
+      | None -> ()
+      | Some t -> (match eo with
+        | None -> add_local_variable for_env id t
+        | Some e -> verify_expression envs for_env e;
+          verify_actual_type_with_declared_type e t id for_env
+    ));
+    ) fil;
+    (match eo with
+    | None -> ()
+    | Some e -> verify_expression envs for_env e;
+      verify_actual_type_with_boolean e "unknow type in for loop condition"
+    );
+    List.iter (verify_expression envs for_env) el;
+    verify_statement for_env envs s;
   | Try(body,catch,finally) -> () (*TODO*)
 
 (* check type for constructors  *)
