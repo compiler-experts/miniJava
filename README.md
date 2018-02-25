@@ -192,22 +192,35 @@ Evaluation and execute by certain means
 
 ##### 1. Complilation
 
-Construction of descriptors and tables
+Construction of class descriptors table and method table.
 
-Construction of descriptors
-- [] object descriptor ? object descriptor space
-- [] class descriptor ? class descriptor space
-- [] methode descriptor ? methode descriptor space
+class descriptors table :
+name - classTable : (string, globalClassDescriptor) Hashtbl.t
 
-Allocations
+method table :
+name - methodTable : (string, astmethod) Hashtbl.t
 
-working from specail cases:
-- object -> null, true, false
-- class -> Object, Int, Boolean, String
+All the contents of functions of different classes are saved in the methodTable
+All the contents of classes are saved in the classTable except for the contents of functions
+Here we use the name of functions and type of params to in class descriptor to find the content of function in the methodTable
 
-- [] allocation of special classes
-- [] allocation of special objects
-- [] allocation of class if it is not allocated
+functions:
+- class descriptor of a class : func_name_typeOfpara1,typeOfpara2    classname_func_name_typeOfpara1,typeOfpara2
+- method table of : classname_func_name_typeOfpara1,typeOfpara2      astmethod
+In this way, functions that has the same name but different type of paramters are permitted in the compilation
+
+constructors:
+  name : typeOfpara1,typeOfpara2
+  content: astconst
+In this way, different types of constructors are permitted
+
+
+
+##### Errors that can be found during Complilation
+ParentClassNotDefined ：raised when parent class is not defined in the file
+SameFunctionAlreadyDefined: raised when function of class have the same name and the same type of parameters
+SameFunctionConstructorsDefined : raised when constructors of class have the same name and the same type of parameters
+
 
 ##### 2. Execution
 
