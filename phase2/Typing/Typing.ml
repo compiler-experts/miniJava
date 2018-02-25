@@ -58,10 +58,8 @@ let verify_invoke_args args const_info func_name =
   if(List.length args <> List.length const_info) then
     raise(WrongInvokedArgumentsLength("actual and formal argument lists differ in length"))
   else
-    begin
-      (* Use List.iter2 to compare to list*)
+    (* Use List.iter2 to compare to list*)
       List.iter2 compare_args args const_info
-    end
 
 (* verify declared types of variables in constructor arguments or methods arguments *)
 let verify_declared_args current_env arguments =
@@ -101,28 +99,12 @@ let verify_name s env current_env =
 (* check the type of the assignment operation *)
 let verify_assignop_type t1 t2 op =
   if t1 <> t2 then
-    begin
-      raise(WrongTypesAssignOperation(stringOfOpt t1, string_of_assign_op op ,stringOfOpt t2));
-      match t1 with
-      | Some t ->
-        print_string "\n************************\n";
-        print_string ((stringOf t));
-        print_string "\n************************\n";
-        match t2 with
-        | Some t ->
-          print_string "\n++++++++++++++++++++++\n";
-          print_string ((stringOf t));
-          print_string "\n++++++++++++++++++++++\n";
-        | None -> ()
-      | None -> ()
-    end
+    raise(WrongTypesAssignOperation(stringOfOpt t1, string_of_assign_op op ,stringOfOpt t2))
 
 (* check the type of the operation eg: ==, + *)
 let verify_operation_type t1 op t2 =
   if t1 <> t2 then
-    begin
-      raise(WrongTypesOperation(stringOfOpt t1, string_of_infix_op op, stringOfOpt t2));
-    end
+    raise(WrongTypesOperation(stringOfOpt t1, string_of_infix_op op, stringOfOpt t2))
 
 (* check the type of call expression when it existe the method name, the arguments and global env *)
 let verify_call_expr meth_name args env class_name = 
@@ -152,7 +134,6 @@ let rec verify_array_init_list el =
           if h.etype <> h1.etype then 
           raise(WrongTypeArrayInitList(stringOfOpt h.etype, stringOfOpt h1.etype)));
     verify_array_init_list t
-
 
 (* check the type of the expressions *)
 let rec verify_expression env current_env e =
@@ -416,10 +397,6 @@ let rec verify_statement current_env envs statement =
 
 (* check type for constructors  *)
 let verify_constructors envs current_class consts =
-  (* consts is of astconst structure *)
-  (* print_endline ("=====verify_constructors======");
-  print_class_env(Hashtbl.find envs current_class);
-  print_endline ("=====verify_constructors======"); *)
   let current_env = {
     returntype = Type.Ref({ tpath = []; tid = consts.cname });
     variables = Hashtbl.create 17;
@@ -471,7 +448,6 @@ let add_constructors env current_class consts =
   let consts_table = (Hashtbl.find env current_class).constructors in
   if (Hashtbl.mem consts_table consts.cname) <> true
   then (
-    (* print_const "   " consts; *)
     Hashtbl.add consts_table consts.cname
     {ftype = Type.Ref {tpath=[]; tid=current_class}; 
      fargs = consts.cargstype;
@@ -484,13 +460,12 @@ let add_methods env current_class meths =
   let meths_table = (Hashtbl.find env current_class).methods in
   if (Hashtbl.mem meths_table meths.mname) <> true
   then (
-    (* print_method "   " meths; *)
     Hashtbl.add meths_table meths.mname
      {ftype = meths.mreturntype; 
       fargs = meths.margstype;
       fthrows = meths.mthrows }
   )
-  (*TODO: check override and overload*)
+  (* TODO: check override and overload *)
   else raise(MethodAlreadyExists(meths.mname)) 
 
 (* check if attribute has already exist in hash table *)
@@ -498,7 +473,6 @@ let add_attributes env current_class attrs =
   let attrs_table = (Hashtbl.find env current_class).attributes in
   if (Hashtbl.mem attrs_table attrs.aname) <> true
   then (
-    (* print_attribute "   " attrs; *)
     Hashtbl.add attrs_table attrs.aname attrs.atype
   )
   else raise(AttributeAlreadyExists(attrs.aname))
