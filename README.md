@@ -140,7 +140,7 @@ If you are a team member of the project, please review the [Guidelines for Contr
         - attributes: a `Hashtbl` that maps from attribute name to attribute type (declared type)
         - parent: a class reference type that refers to its class
     - [x] create a `Hashtbl` that maps from class
-- [ ] The second phase is concerned with verifying that the inside of classes is correct (mainly the body of methods). She will also make sure of the correction of the higher level expression.
+- [x] The second phase is concerned with verifying that the inside of classes is correct (mainly the body of methods). She will also make sure of the correction of the higher level expression.
     - [x] create 3 verification method that verifies the following aspects of the program
         - [x] `verify_methods` that checks the type of methods
             - [x] create a local definition environment type called `current_env` it contains 3 fields as follows
@@ -150,18 +150,18 @@ If you are a team member of the project, please review the [Guidelines for Contr
                 - env_type: a string that identifies the type of the local definition environment, it could be `constructor`, `method` or `attribute`, in this case, the `env_type` is `method`
             - [x] write a verification method (`verify_declared_args`) that checks the declared type of variables in the method arguments
                 - [x] check if there exists Duplicate Local Variable
-            - [ ] write a verification method (`verify_statement`) that checks the body of the method
+            - [x] write a verification method (`verify_statement`) that checks the body of the method
                 - [x] check declared variables
                 - [x] check block of statement
                 - [x] check expression
                 - [x] check return statement when it's none, ex: `return;`
                 - [x] check return statement when it's not none, ex: `return x;`
-                - [ ] check throw statement
+                - [x] check throw statement
                 - [x] check while statement
                 - [x] check if statement when it doesn't have `else`
                 - [x] check if statement when it has `else`
                 - [x] check for statement
-                - [ ] check try statement
+                - [x] check try statement
         - [x] `verify_constructors` that checks the type of constructors
         - [x] `verify_attributes` that checks the type of attributes
 
@@ -212,6 +212,7 @@ If you are a team member of the project, please review the [Guidelines for Contr
 
 - errors related to overloading
 - errors related to overriding
+
 
 #### Execution
 

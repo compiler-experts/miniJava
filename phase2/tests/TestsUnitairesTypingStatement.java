@@ -1,3 +1,7 @@
+// import java.util.EmptyStackException;
+
+class EmptyStackException{}
+
 class I {
 	boolean a = (56 == 5);
 	float b = 8.5f;
@@ -75,6 +79,24 @@ class I {
 	private void testWhile(){
 		while(i < 10) {
 			i++;
+		}
+	}
+
+	// check throws, it has error but it will pas type checking
+	public void testThrow() throws NullPointerException {
+		int i = 0;
+		if (i == 1) throw new EmptyStackException();
+	}
+
+	public void testTry() {
+		try {
+			testThrow();
+		}
+		catch(EmptyStackException e) {
+			int i = 0;
+		}
+		finally {
+			int j = 0;
 		}
 	}
 }
