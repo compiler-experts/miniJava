@@ -22,6 +22,12 @@ type class_env = {
   parent : Type.ref_type;
 }
 
+(* print Type.t option *)
+let stringOfOpt s =
+  match s with
+  | None -> "null"
+  | Some t -> stringOf t
+
 (* auxiliary print functions *)
 let print_arguments tab arguments =
   List.iter (fun a -> print_string(tab ^ AST.stringOf_arg a)) arguments
@@ -92,10 +98,10 @@ let verify_name s env current_env =
   else Some(Hashtbl.find current_env.variables s)
 
 (* check the type of the assignment operation *)
-let verify_assignop_type t1 t2 =
+let verify_assignop_type t1 t2 op =
   if t1 <> t2 then
     begin
-      raise(WrongTypesAssignOperation(t1, t2));
+      raise(WrongTypesAssignOperation(stringOfOpt t1, string_of_assign_op op ,stringOfOpt t2));
       match t1 with
       | Some t ->
         print_string "\n************************\n";
@@ -114,7 +120,7 @@ let verify_assignop_type t1 t2 =
 let verify_operation_type t1 op t2 =
   if t1 <> t2 then
     begin
-      raise(WrongTypesOperation(t1, t2));
+      raise(WrongTypesOperation(stringOfOpt t1, string_of_infix_op op, stringOfOpt t2));
     end
 
 (* check the type of call expression when it existe the method name, the arguments and global env *)
@@ -134,6 +140,8 @@ let verify_call_expr meth_name args env class_name =
         | ArgumentTypeNotMatch s-> raise(ArgumentTypeNotMatch("Arguments\' type in "^meth_name^" not match"))
         | WrongInvokedArgumentsLength s -> raise(WrongInvokedArgumentsLength(s))
     end
+
+
 
 (* check the type of the expressions *)
 let rec verify_expression env current_env e =
@@ -166,7 +174,7 @@ let rec verify_expression env current_env e =
               | WrongInvokedArgumentsLength s -> raise(WrongInvokedArgumentsLength(s))
           end
       end
-  (* | NewArray (Some n1,n2,al) -> () (*TODO*) *)
+  | NewArray (t,args,target) -> e.etype <- Some(Array(t, List.length args))
   | Call (r,m,al) ->
     (match r with
       | None -> (* when method is called without declaring class name*)
@@ -203,7 +211,7 @@ let rec verify_expression env current_env e =
   | AssignExp (e1,op,e2) ->
     verify_expression env current_env e1;
     verify_expression env current_env e2;
-    verify_assignop_type e1.etype e2.etype;
+    verify_assignop_type e1.etype e2.etype op;
     e.etype <- e1.etype
   | Post (e1,op) ->
       verify_expression env current_env e1;
@@ -243,11 +251,11 @@ let rec verify_expression env current_env e =
       verify_expression env current_env e3;
       (* check if e1.etype is boolean and e2.etype equals e3.etype *)
       if e1.etype <> Some(Primitive(Boolean))
-      then raise(WrongTypeCondOperation(e1.etype))
+      then raise(WrongTypeCondOperation(stringOfOpt e1.etype))
       (match e2.etype, e3.etype with
         | Some(_), None -> ()
         | None, Some(_) -> ()
-        | Some(t1), Some(t2) -> if t1 <> t2 then raise(InvalidTypeCondOperation(t1, t2)));
+        | Some(t1), Some(t2) -> if t1 <> t2 then raise(InvalidTypeCondOperation(stringOf t1, stringOf t2)));
       if e2.etype <> None then e.etype <- e2.etype else e.etype <- e3.etype
   | Cast (t,e1) -> 
       verify_expression env current_env e1;
@@ -409,7 +417,7 @@ let verify_attributes envs current_class attrs =
     verify_expression envs current_env e;
     (* Verify the assignment operation's type is coherent *)
     let mytype = Some(attrs.atype) in
-    verify_assignop_type mytype e.etype 
+    verify_assignop_type mytype e.etype AST.Assign
   | None -> ()
 
 (* check the type of the class *)

@@ -20,6 +20,7 @@ class I {
 	long l = (long) sr;
 	boolean test = my instanceof I;
 	int condop = (1 == 2) ? 1 : 5;
+	int[] arr = new int[5];
 	private String func1 (int a) {
 		int b = 1;
 		b += (5+4);
