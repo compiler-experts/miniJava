@@ -6,20 +6,35 @@ class B extends A{
 class A {
 
   int a = 5;
-  Sttring b ="abc";
+  String b ="abc";
   public void f1(){
   }
+
+  public void f1(int b,int c){
+  }
+
+  public void f1(int d){
+  }
+
   public void f2(){
   }
 
   public A(int num)
   {
-    a = num;
+    int a = num;
   }
 
-  public A(int num,String name)
+
+  public A(int num1,int num2)
   {
-    a = num;
+    int a = num;
   }
+
+
+}
+
+
+
+class C {
 
 }

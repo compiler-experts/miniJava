@@ -1,7 +1,9 @@
 open AST
 open Hashtbl
 
-
+exception ParentClassNotDefined of string
+exception SameFunctionAlreadyDefined of string
+exception SameFunctionConstructorsDefined of string
 
 type classDescriptor =
 {
@@ -84,13 +86,13 @@ let printClassTable classTable =
 *)
 
 let addMethodsToMethodTable className methodTable cmethod =
-	let nameMethod = className ^ "_" ^ cmethod.mname in
+	let nameMethod = className ^ "_" ^ cmethod.mname ^ "_" ^ (ListII.concat_map "," stringOf_argType cmethod.margstype) in
 	if(verifyHashtbl methodTable  nameMethod) = false
 	then begin
 		Hashtbl.add methodTable nameMethod cmethod
 	end
 	else begin
-		print_endline("function " ^ cmethod.mname ^ " already in the method table")
+		raise(SameFunctionAlreadyDefined(nameMethod ^  " already defined in method Table "))
 	end
 
 
@@ -102,17 +104,26 @@ let addToMethodTable methodTable className c =
 		ulity: add methods, constructors,attributes in the Hashtbl classTable
 *)
 let addMethodsToClassDesciptor className methods cmethod =
-	if(verifyHashtbl methods  cmethod.mname) = false
+	let nameKey = cmethod.mname ^ "_" ^ (ListII.concat_map "," stringOf_argType cmethod.margstype) in
+
+	if(verifyHashtbl methods  nameKey) = false
 	then begin
-		let nameMethod = className ^ "_" ^ cmethod.mname in
-		Hashtbl.add methods cmethod.mname nameMethod
+		let nameMethod = className ^ "_" ^ cmethod.mname ^ "_" ^ (ListII.concat_map "," stringOf_argType cmethod.margstype) in
+		Hashtbl.add methods nameKey nameMethod
 	end
 	else begin
-		print_endline("function " ^ cmethod.mname ^ " already defined")
+		raise(SameFunctionAlreadyDefined(nameKey ^  " already defined in ClassDesciptor " ^ className ))
 	end
 
 let addConstructorsToClassDesciptor constructorsClass constructor =
-	Hashtbl.add constructorsClass (ListII.concat_map "," stringOf_argType constructor.cargstype) constructor
+	let args = (ListII.concat_map "," stringOf_argType constructor.cargstype) in
+	if(verifyHashtbl constructorsClass  args) = false
+	then begin
+		Hashtbl.add constructorsClass args constructor
+	end
+	else begin
+		raise(SameFunctionConstructorsDefined(args  ^  " type constructor already defined in ClassDesciptor " ))
+	end
 
 let addMethodsToClassDesciptorFromParent classTable methodsClass c =
 	if (Hashtbl.mem classTable c.cparent.tid) = true
@@ -155,8 +166,10 @@ let addToClassTable classTable className c =
 (*asttype ={  mutable modifiers : modifier list; id : string; info : type_info;}
 ulity: add class and methods in the Hashtbl
 *)
-let rec findParentClass cname typelist = match typelist with
+let rec findParentClass cname typelist =
+	match typelist with
   | head::liste -> if head.id = cname then head else findParentClass cname liste
+
 
 let rec compileClass methodTable classTable ast asttype =
   match asttype.info with
@@ -169,10 +182,15 @@ let rec compileClass methodTable classTable ast asttype =
 										end
 										else
 										  begin
-												let parenttype = findParentClass c.cparent.tid ast.type_list in
-												compileClass methodTable classTable ast parenttype;
-												addToClassTable classTable asttype.id c;
-												addToMethodTable methodTable asttype.id c
+													try
+														let parenttype = findParentClass c.cparent.tid ast.type_list in
+														compileClass methodTable classTable ast parenttype;
+														addToClassTable classTable asttype.id c;
+														addToMethodTable methodTable asttype.id c;
+													with
+														| SameFunctionAlreadyDefined str -> raise(SameFunctionAlreadyDefined(str))
+														| SameFunctionConstructorsDefined str -> raise(SameFunctionConstructorsDefined(str))												
+														| _ -> raise(ParentClassNotDefined(c.cparent.tid))
 											end
 								end
 
