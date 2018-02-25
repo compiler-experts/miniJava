@@ -14,6 +14,7 @@ class I {
 	String mystring2 = func1(i);
 	private String func1 (int a) {
 		int b = 1;
+		b += (5+4);
 		return "YES";
 	}
 

@@ -5,11 +5,11 @@ let execute lexbuf verbose =
     let ast = compilationUnit Lexer.token lexbuf in
     print_endline "successfull parsing";
 
-    (*if verbose then AST.print_program ast;
+    if verbose then AST.print_program ast;
     print_endline "===================";
     Typing.typing ast;
     if verbose then AST.print_program ast;
-    print_endline "successfull typing";*)
+    print_endline "successfull typing";
     Compilation.compileAST ast;
     print_endline "compile successfull";
 

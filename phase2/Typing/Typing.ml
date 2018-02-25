@@ -180,7 +180,11 @@ let rec verify_expression env current_env e =
       e.etype <- verify_name s env current_env
   | ArrayInit el -> () (*TODO*)
   | Array (e,el) -> () (*TODO*)
-  | AssignExp (e1,op,e2) -> () (*TODO*) 
+  | AssignExp (e1,op,e2) ->
+    verify_expression env current_env e1;
+    verify_expression env current_env e2;
+    verify_assignop_type e1.etype e2.etype;
+    e.etype <- e1.etype
   | Post (e,op) -> () (*TODO*)
   | Pre (op,e) -> () (*TODO*)
   | Op (e1,op,e2) -> 
