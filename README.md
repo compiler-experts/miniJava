@@ -214,7 +214,7 @@ constructors:
   content: astconst
 In this way, different types of constructors are permitted
 
-
+Please take care that overriding are not supported in the typage. For testing the overriding, please delete the typage function first. 
 
 ##### Errors that can be found during Complilation
 ParentClassNotDefined ：raised when parent class is not defined in the file
