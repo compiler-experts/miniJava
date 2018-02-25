@@ -3,6 +3,7 @@ open Hashtbl
 
 exception ParentClassNotDefined of string
 exception SameFunctionAlreadyDefined of string
+exception SameFunctionConstructorsDefined of string
 
 type classDescriptor =
 {
@@ -115,7 +116,14 @@ let addMethodsToClassDesciptor className methods cmethod =
 	end
 
 let addConstructorsToClassDesciptor constructorsClass constructor =
-	Hashtbl.add constructorsClass (ListII.concat_map "," stringOf_argType constructor.cargstype) constructor
+	let args = (ListII.concat_map "," stringOf_argType constructor.cargstype) in
+	if(verifyHashtbl constructorsClass  args) = false
+	then begin
+		Hashtbl.add constructorsClass args constructor
+	end
+	else begin
+		raise(SameFunctionConstructorsDefined(args  ^  " type constructor already defined in ClassDesciptor " ))
+	end
 
 let addMethodsToClassDesciptorFromParent classTable methodsClass c =
 	if (Hashtbl.mem classTable c.cparent.tid) = true
@@ -181,6 +189,7 @@ let rec compileClass methodTable classTable ast asttype =
 														addToMethodTable methodTable asttype.id c;
 													with
 														| SameFunctionAlreadyDefined str -> raise(SameFunctionAlreadyDefined(str))
+														| SameFunctionConstructorsDefined str -> raise(SameFunctionConstructorsDefined(str))												
 														| _ -> raise(ParentClassNotDefined(c.cparent.tid))
 											end
 								end
