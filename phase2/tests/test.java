@@ -6,12 +6,14 @@ class I {
 	String c = "yes";
 	int i = 5;
 	int j = i;
-	private String func1 (int a, int b) {
-		// int b = 1;
-		{ // Test Block in verify_statement
-			int n = 5;
-			String m = b;
-		}
+	public I(int e) {
+		e += 1;
+	}
+	I my = new I(i);
+	String mystring1 = I.func1(j);
+	String mystring2 = func1(i);
+	private String func1 (int a) {
+		int b = 1;
 		return "YES";
 	}
 

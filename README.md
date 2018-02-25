@@ -127,14 +127,64 @@ If you are a team member of the project, please follow the [Working Standard](./
         - [x] non-static Methods
 ---
 
-### Second part: The typer and the execution support
+### Second part: The Type-checking and the Execution
 
 *Deadline 25/02/2018*
 
-#### Type
+#### Type-checking
 
-- [] The construction of the class definition environment. This environment contains the type of methods for each class. This phase ignores the attributes (which are not visible outside the class) and the method bodies.
+- [x] The construction of the class definition environment. This environment contains the type of methods for each class. This phase ignores the attributes (which are not visible outside the class) and the method bodies.
+    - [x] create a class definition environment type called `class_env`, it contains 4 fields as follows
+        - methods: a `Hashtbl` that maps from methode name to methode return type and argument type
+        - constructors: a `Hashtbl` that maps from constructor name to class reference type and argument type
+        - attributes: a `Hashtbl` that maps from attribute name to attribute type (declared type)
+        - parent: a class reference type that refers to its class
+    - [x] create a `Hashtbl` that maps from class
 - [] The second phase is concerned with verifying that the inside of classes is correct (mainly the body of methods). She will also make sure of the correction of the higher level expression.
+    - [x] create 3 verification methode that verifies the following aspects of the program
+        - [x] `verify_methods` that checks the type of methods
+            - [x] create a local definition environment type called `current_env` it contains 3 fields as follows
+                - returntype: the declared return type of the methode
+                - variables: a `Hashtbl` that maps from local variable name to local variable declared type
+                - this_class: the id of the class
+                - env_type: a string that identifies the type of the local definition environment, it could be `constructor`, `methode` or `attribute`, in this case, the `env_type` is `methode`
+            - [x] write a verification methode (`verify_declared_args`) that checks the declared type of variables in the methode arguments
+                - [x] check if there exists Duplicate Local Variable
+            - [] write a verification methode (`verify_statement`) that checks the body of the methode
+                - [x] check declared variables
+                - [x] check block of statement
+                - [x] check expression
+                - [x] check return statement when it's none, ex: `return;`
+                - [] check return statement when it's not none, ex: `return x;`
+                - [] check throw statement
+                - [] check while statement
+                - [] check if statement when it doesn't have `else`
+                - [] check if statement when it has `else`
+                - [] check for statement
+                - [] check try statement
+        - [x] `verify_constructors` that checks the type of constructors
+        - [x] `verify_attributes` that checks the type of attributes
+
+##### Errors that can be found during Type-checking
+
+- ArgumentAlreadyExists
+- AttributeAlreadyExists
+- ClassAlreadyExists
+- ConstructorAlreadyExists
+- DuplicateLocalVariable
+- IncompatibleTypes
+    - when constructor try to return a variable ->  IncompatibleTypes("unexpected return value")
+    - when methode return does not contain variable -> IncompatibleTypes("missing return value")
+    - when methode return type does not corresponds with the declared one -> IncompatibleTypes("missing return value")
+- MethodAlreadyExists
+- UnknowVariable
+- WrongTypesAssignOperation
+- WrongTypesOperation
+
+##### Errors that can not yet be found during Type-checking
+
+- errors related to overloading
+- errors related to overriding
 
 #### Execution
 

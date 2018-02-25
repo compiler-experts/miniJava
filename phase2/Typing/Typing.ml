@@ -10,7 +10,8 @@ type func_info = {
 type curr_env = {
   returntype : Type.t;
   variables: (string, Type.t) Hashtbl.t;
-  this_class: string
+  this_class: string;
+  env_type: string
 }
 
 (* class definition environment *)
@@ -37,7 +38,26 @@ let print_class_envs class_envs =
   Hashtbl.iter (fun k v -> print_string("class " ^ k ^ "\n"); print_class_env v ) class_envs;
   print_endline ("")
 
-let verify_argument current_env arguments =
+
+(* compare two arguments'type in two lists*)
+let compare_args a1 a2 = 
+  match a1.etype with
+  | None -> raise(ArgumentTypeNotExiste)
+  | Some t -> if(t <> a2.ptype) then raise(ArgumentTypeNotMatch("arguments type not match"))
+
+(* check if the input arguments' type is coherent *)
+let verify_invoke_args args const_info func_name = 
+  (* chek if the length of arguments match the arguments which are defined in a constructor *)
+  if(List.length args <> List.length const_info) then
+    raise(WrongInvokedArgumentsLength("actual and formal argument lists differ in length"))
+  else
+    begin
+      (* Use List.iter2 to compare to list*)
+      List.iter2 compare_args args const_info
+    end
+
+(* verify declared types of variables in constructor arguments or methodes arguments *)
+let verify_declared_args current_env arguments =
   if (Hashtbl.mem current_env.variables arguments.pident) <> true
   then (
     (* print_arguments "   " arguments; *)
@@ -61,7 +81,7 @@ let verify_name s env current_env =
     begin
       (* second find in global env *)
       if (Hashtbl.mem (Hashtbl.find env current_env.this_class).attributes s) <> true 
-      then raise(UnknowVariable(s))
+      then raise(UnknownVariable(s))
       else Some(Hashtbl.find (Hashtbl.find env current_env.this_class).attributes s)
     end
   else Some(Hashtbl.find current_env.variables s)
@@ -70,16 +90,16 @@ let verify_name s env current_env =
 let verify_assignop_type t1 t2 =
   if t1 <> t2 then
     begin
-      raise(TypeError.WrongTypesAssignOperation(t1, t2));
+      raise(WrongTypesAssignOperation(t1, t2));
       match t1 with
       | Some t ->
         print_string "\n************************\n";
-        print_string ((Type.stringOf t));
+        print_string ((stringOf t));
         print_string "\n************************\n";
         match t2 with
         | Some t ->
           print_string "\n++++++++++++++++++++++\n";
-          print_string ((Type.stringOf t));
+          print_string ((stringOf t));
           print_string "\n++++++++++++++++++++++\n";
         | None -> ()
       | None -> ()
@@ -89,16 +109,69 @@ let verify_assignop_type t1 t2 =
 let verify_operation_type t1 op t2 =
   if t1 <> t2 then
     begin
-      raise(TypeError.WrongTypesOperation(t1, t2));
+      raise(WrongTypesOperation(t1, t2));
+    end
+
+(* check the type of call expression when it existe the method name, the arguments and global env *)
+let verify_call_expr meth_name args env class_name = 
+  let meths_table = (Hashtbl.find env class_name).methods in
+  (* first check if method defines in class *)
+  if(Hashtbl.mem meths_table meth_name) <> true then
+    raise(UnknownMethod(meth_name))
+  else
+    begin
+        let meth_info = Hashtbl.find meths_table meth_name in 
+      try
+        verify_invoke_args args meth_info.fargs class_name;
+        Some(meth_info.ftype);
+      with
+        | ArgumentTypeNotExiste -> raise(ArgumentTypeNotExiste)
+        | ArgumentTypeNotMatch s-> raise(ArgumentTypeNotMatch("Arguments\' type in "^meth_name^" not match"))
+        | WrongInvokedArgumentsLength s -> raise(WrongInvokedArgumentsLength(s))
     end
 
 (* check the type of the expressions *)
 let rec verify_expression env current_env e =
-  print_string(string_of_expression_desc(e.edesc));
+  (* print_string(string_of_expression_desc(e.edesc)); *)
   match e.edesc with
-  | New (None,n,al) -> () (*TODO*)
+  | New (None,n,al) -> 
+    List.iter (verify_expression env current_env) al;
+    let (lastClass, mylist) = ListII.extract_last n in
+    (* first find in global env class*)
+    if(Hashtbl.mem env lastClass) <> true then
+      raise(UnknownClass(lastClass))
+    else
+      begin
+        (* then check if constructor has already declared or not *)
+        let consts_table = (Hashtbl.find env lastClass).constructors in
+        (* when there is no constructor in global env and the arguments are null, 
+        then set the expression type is the type of constructor *)
+        if(Hashtbl.length consts_table = 0 && List.length al = 0) then
+            e.etype <- Some(Ref({ tpath = []; tid = lastClass }))
+        else
+          begin
+            (* check the type of arguments in the constructor *)
+            let consts_info = Hashtbl.find consts_table lastClass in 
+            try 
+              verify_invoke_args al consts_info.fargs lastClass;
+              e.etype <- Some(consts_info.ftype)
+            with
+              | ArgumentTypeNotExiste -> raise(ArgumentTypeNotExiste)
+              | ArgumentTypeNotMatch s -> raise(ArgumentTypeNotMatch("Arguments\' type in "^lastClass^" not match"))
+              | WrongInvokedArgumentsLength s -> raise(WrongInvokedArgumentsLength(s))
+          end
+      end
   (* | NewArray (Some n1,n2,al) -> () (*TODO*) *)
-  | Call (r,m,al) -> () (*TODO*)
+  | Call (r,m,al) ->
+    (match r with
+      | None -> (* when method is called without declaring class name*)
+        List.iter (verify_expression env current_env) al;
+        e.etype <- verify_call_expr m al env current_env.this_class
+      | Some c ->
+        List.iter (verify_expression env current_env) al;
+        let class_name = string_of_expression(c) in
+        e.etype <- verify_call_expr m al env class_name
+    )
   | Attr (r,a) -> () (*TODO*)
   | If (e1, e2, e3) -> () (*TODO*)
   | Val v ->
@@ -143,9 +216,9 @@ let rec verify_statement current_env envs statement =
         match e.etype with
           | None -> print_string ("["^s^"]"); (*TODO*)
           (* check int i = 2, int j = i *)
-          | Some real_t -> (
-            if real_t <> t
-            then raise(IncompatibleTypes((Type.stringOf real_t)^" cannnot be converted to "^(Type.stringOf t)^" for "^id))
+          | Some actual_t -> (
+            if actual_t <> t (*actual type not equals to declared type*)
+            then raise(IncompatibleTypes((Type.stringOf actual_t)^" cannnot be converted to "^(Type.stringOf t)^" for "^id))
             else add_local_variable current_env id t
           )
         )
@@ -154,16 +227,41 @@ let rec verify_statement current_env envs statement =
   | Block b ->
     let block_env = { returntype = current_env.returntype;
       variables = Hashtbl.copy current_env.variables;
-      this_class = current_env.this_class } in
+      this_class = current_env.this_class;
+      env_type = current_env.env_type} in
     List.iter (verify_statement block_env envs) b
-  | Nop -> () (*TODO*)
-  | Expr e -> () (*TODO*)
-  | Return None -> () (*TODO*)
-  | Return Some(e) -> () (*TODO*)
+  | Nop -> () 
+  | Expr e -> verify_expression envs current_env e
+  (* check when the return clause is none, ex: return;*)
+  | Return None -> (
+    match current_env.returntype with
+      | Ref(ref)-> if current_env.env_type <> "constructor" then raise(IncompatibleTypes("missing return value"))
+      | Void -> ()
+      | _ -> raise(IncompatibleTypes("This methode must return a result of type "^(Type.stringOf current_env.returntype)))
+    )
+  (* check when the return clause is not none, ex: return x;*)
+  | Return Some(e) -> (verify_expression envs current_env e;
+    if current_env.env_type <> "methode" then raise(IncompatibleTypes("unexpected return value"));
+    match current_env.returntype, e.etype with
+      | declared_t, Some(actual_t) -> if declared_t <> actual_t
+        then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to "^(stringOf declared_t)))
+      | _, None -> raise(InvalidMethodDeclaration("return type required"))
+    )
   | Throw e -> () (*TODO*)
   | While(e,s) -> () (*TODO*)
-  | If(e,s,None) -> () (*TODO*)
-  | If(e,s1,Some s2) -> () (*TODO*)
+  | If(e,s,None) -> (verify_expression envs current_env e; 
+    verify_statement current_env envs s;
+    match e.etype with
+    | None -> raise(UnknowActualType("unknow type in if condition"))
+    | Some actual_t -> if actual_t <> Primitive(Boolean)
+      then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to boolean")))
+  | If(e,s1,Some s2) -> (verify_expression envs current_env e;
+    verify_statement current_env envs s1;
+    verify_statement current_env envs s2;
+    match e.etype with
+      | None -> raise(UnknowActualType("unknow type in if else condition"))
+      | Some actual_t -> if actual_t <> Primitive(Boolean)
+        then raise(IncompatibleTypes((stringOf actual_t)^" cannot be converted to boolean")))
   | For(fil,eo,el,s) -> () (*TODO*)
   | Try(body,catch,finally) -> () (*TODO*)
 
@@ -173,20 +271,32 @@ let verify_constructors envs current_class consts =
   (* print_endline ("=====verify_constructors======");
   print_class_env(Hashtbl.find envs current_class);
   print_endline ("=====verify_constructors======"); *)
-  let current_env = {returntype = Type.Ref({ tpath = []; tid = consts.cname }); variables = Hashtbl.create 17; this_class = current_class} in
-  List.iter (verify_argument current_env) consts.cargstype;
-  List.iter (verify_statement current_env envs) consts.cbody
+  let current_env = {
+    returntype = Type.Ref({ tpath = []; tid = consts.cname });
+    variables = Hashtbl.create 17;
+    this_class = current_class;
+    env_type = "constructor"} in
+  List.iter (verify_declared_args current_env) consts.cargstype;
+  List.iter (verify_statement current_env envs) consts.cbody (*TODO: I am constructor*)
 
 let verify_methods envs current_class meths =
-  let current_env = {returntype = meths.mreturntype; variables = Hashtbl.create 17; this_class = current_class} in
-  List.iter (verify_argument current_env) meths.margstype;
+  let current_env = {
+    returntype = meths.mreturntype;
+    variables = Hashtbl.create 17;
+    this_class = current_class;
+    env_type = "methode"} in
+  List.iter (verify_declared_args current_env) meths.margstype;
   List.iter (verify_statement current_env envs) meths.mbody
 
 (* check the type of the attibutes *)
 let verify_attributes envs current_class attrs = 
   match attrs.adefault with
   | Some e ->
-    let current_env = {returntype = Type.Void; variables = Hashtbl.create 17; this_class = current_class} in
+    let current_env = {
+      returntype = Type.Void;
+      variables = Hashtbl.create 17;
+      this_class = current_class;
+      env_type = "attribute"} in
     verify_expression envs current_env e;
     (* Verify the assignment operation's type is coherent *)
     let mytype = Some(attrs.atype) in
