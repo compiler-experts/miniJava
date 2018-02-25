@@ -211,24 +211,27 @@ let rec verify_expression env current_env e =
         else 
           e.etype <- Some(Hashtbl.find attrs_table a)
       | None -> ())
-  | If (e1, e2, e3) -> () (*TODO*)
+  | If (e1, e2, e3) ->
+      verify_expression env current_env e1;
+      verify_expression env current_env e2;
+      verify_expression env current_env e3;
   | Val v ->
       e.etype <- verify_value v
   | Name s -> 
       e.etype <- verify_name s env current_env
-  | ArrayInit el -> 
-    List.iter (verify_expression env current_env) el;
-    (* check the type of each element which is in an array list is same *)
-    verify_array_init_list el;
-    e.etype <- 
-      (match (List.hd el).etype with
-      | Some(t) -> Some(Array(t, 1)))
+  | ArrayInit el ->
+      List.iter (verify_expression env current_env) el;
+      (* check the type of each element which is in an array list is same *)
+      verify_array_init_list el;
+      e.etype <-
+        (match (List.hd el).etype with
+        | Some(t) -> Some(Array(t, 1)))
   | Array (e,el) -> () (*TODO*)
   | AssignExp (e1,op,e2) ->
-    verify_expression env current_env e1;
-    verify_expression env current_env e2;
-    verify_assignop_type e1.etype e2.etype op;
-    e.etype <- e1.etype
+      verify_expression env current_env e1;
+      verify_expression env current_env e2;
+      verify_assignop_type e1.etype e2.etype op;
+      e.etype <- e1.etype
   | Post (e1,op) ->
       verify_expression env current_env e1;
       (match op with
