@@ -19,3 +19,4 @@ exception UnknownMethod of string
 exception UnknowActualType of string
 exception WrongTypePrefixOperation of string * string
 exception WrongTypePostfixOperation of string
+exception UnknownAttribute of string * string

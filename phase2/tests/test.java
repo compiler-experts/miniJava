@@ -15,6 +15,7 @@ class I {
 	boolean f = !a;
 	int g = ~5;
 	float h = (-8.5f);
+	boolean boo = I.a;
 	private String func1 (int a) {
 		int b = 1;
 		b += (5+4);
