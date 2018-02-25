@@ -169,6 +169,36 @@ If you are a team member of the project, please review the [Guidelines for Contr
             - `env_type` in the local definition environment `current_env` is `constructor`
             - check return statement in `verify_statement` is slightly different since constructors can have `reuturn;` but not something like `return x;`
         - [x] `verify_attributes` that checks the type of attributes
+            - [x] create a local definition environment type called `current_env` it contains 3 fields as following
+                - returntype: since attributes have no return value, so it sets to be `Type.Void`
+                - variables: a `Hashtbl` that maps from local variable name to local variable declared type
+                - this_class: the id of the current class
+                - env_type: which is `attribute` here
+            - [x] write a verification expression (`verify_expression`) that checks the declared type of an expression
+                In `verify_expression`: 
+                - [x] check `New` expression type which instantiates a class
+                - [x] check `NewArray` expression type which declares an array like: new int[5]
+                - [x] check `Call` expression type which calls a method, here, we didn't check `this` keyword when calling a method. For the moment, it only supports the case when the class name has already existes in `class_en` hashtable.
+                - [x] check `Attr` expression type which calls an attribute
+                - [x] check `If` expression type
+                - [x] check `Val` expression type which is the primitive type like int, string... in an expression
+                - [x] check `Name` expression type which represents a variable
+                - [x] check `ArrayInit` expression type which initializes an array like {1,2,3}
+                - [ ] check `Array` expression type (TODO). This part has not been done for the moment
+                - [x] check `AssignExp` expression type which compares an assignment operation type
+                - [x] check `Post` expression type which is some post operations type, like: a++, b--...
+                - [x] check `Pre` expression type which is some pre operations type, like: !a, ~b...
+                - [x] cehck `Op` expression type which is some operation optype, like: ||, &&, +, -...
+                - [x] check `CondOp` expression type which is conditional operation, like a ? b : c
+                - [x] check `Cast` expression type
+                - [x] check `Type` expression type
+                - [x] check `ClassOf` expression type
+                - [x] check `Instanceof` expression type
+                - [x] check `VoidClass` expression 
+            - [x] write an verification method (`verify_assignop_type`) that checks the declared type of an attribute match the type of the expression. It has three inputs:
+                - t1: the type of an attribute
+                - t2: the type of the corresponding expression of an attribute
+                - op: the type of operation, here is `Type.Assign`
 
 ##### Errors that can be found during Type-checking
 
@@ -176,7 +206,9 @@ If you are a team member of the project, please review the [Guidelines for Contr
     - when found duplicated argument in constructor argument list -> ArgumentAlreadyExists("[pident of argument]")
     - when found duplicated argument in method argument list -> ArgumentAlreadyExists("[pident of argument]")
 - ArgumentTypeNotExiste
+    - when found the arguments in a called function don't existe a declared method
 - ArgumentTypeNotMatch
+    - when found the arguments in a called function don't match a declared method -> ArgumentTypeNotMatch("Arguments\' type in "^meth_name^" not match")
 - AttributeAlreadyExists
     - when found duplicated attribute in class definition environment -> AttributeAlreadyExists("[aname of attribute]")
 - ClassAlreadyExists
@@ -205,13 +237,19 @@ If you are a team member of the project, please review the [Guidelines for Contr
     - when actual type of variable cannot be determined in the condition part of if statement (If(e,s,None)) -> UnknownActualType("[edesc]: unknow type in if condition")
     - when actual type of variable cannot be determined in the condition part of if else statement (If(e,s,Some s2)) -> UnknownActualType("[edesc]: unknow type in if else condition")
 - UnknownVariable
+    - when the variable does not existe in current environment or global environment -> UnknownVariable("[variable_name]")
 - UnknownClass
 - UnknownMethod
 - WrongTypePrefixOperation
+    - when the prefix operation type is not match -> WrongTypePrefixOperation("[operation, expr]")
 - WrongTypePostfixOperation
+    - when the postfix operation type is not match -> WrongTypePostfixOperation("[operation, expr]")
 - WrongInvokedArgumentsLength
+    - when actual and formal argument lists differ in length -> WrongInvokedArgumentsLength()
 - WrongTypesAssignOperation
+    - when an assignment operation type is not match -> WrongTypesAssignOperation("[expr1_type, op, expr2_type]")
 - WrongTypesOperation
+    - when an operation type is not match -> WrongTypesAssignOperation("[expr1_type, op, expr2_type]")
 
 ##### Errors that can not yet be found during Type-checking
 
